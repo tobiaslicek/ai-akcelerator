@@ -104,4 +104,13 @@ export interface Review {
   answers: Record<number, number | boolean>;
   right: Record<number, boolean>;
 }
+export interface Feedback {
+  id: string;
+  kind: string;
+  title: string;
+  tag?: string;
+  rating?: "up" | "down" | null;
+  note?: string;
+  updatedAt?: number;
+}
 export type View = "dnes" | "ucit-se" | "trasa" | "knihovna" | "systemy";

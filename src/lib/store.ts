@@ -4,6 +4,7 @@ import type {
   Challenge,
   Day,
   Days,
+  Feedback,
   Lesson,
   LibItem,
   Note,
@@ -31,6 +32,7 @@ export interface State {
   systems: SysItem[];
   sysReady: boolean;
   challenges: Challenge[];
+  feedback: Record<string, Feedback>;
   profile: string;
   readOnly: boolean;
   tutorOff: boolean;
@@ -69,6 +71,7 @@ let state: State = {
   systems: [],
   sysReady: false,
   challenges: [],
+  feedback: {},
   profile: DEFAULT_PROFILE,
   readOnly: false,
   tutorOff: false,
@@ -194,11 +197,38 @@ const ERR: Record<string, string> = {
 };
 const errText = (e: unknown) => ERR[(e as SampleError)?.code ?? ""] ?? "Spojení vypadlo. Zkus to znovu.";
 
+const feedbackDigest = () => {
+  const all = Object.values(state.feedback)
+    .filter((f) => f.rating || f.note)
+    .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
+    .slice(0, 12);
+  if (!all.length) return "";
+  const line = (f: Feedback) =>
+    "- " + (f.rating === "up" ? "hodí se" : f.rating === "down" ? "nehodí se" : "bez hodnocení") + ": " + f.title.slice(0, 90) + (f.note ? " (jeho slovy: " + f.note.slice(0, 200) + ")" : "");
+  return "\nCo sám řekl k novinkám, ber to jako vodítko, co ho zajímá:\n" + all.map(line).join("\n") + "\n";
+};
+
+export async function saveFeedback(fb: Feedback) {
+  const db = await dbP;
+  if (!db || state.readOnly) return false;
+  const { id, ...rest } = fb;
+  const next = { ...rest, updatedAt: Date.now() };
+  set({ feedback: { ...state.feedback, [id]: { id, ...next } } });
+  try {
+    await db.collection("feedback").doc(id).set(next);
+    return true;
+  } catch {
+    toast("Připomínku se nepodařilo uložit.");
+    return false;
+  }
+}
+
 const rules = () =>
   "Jsi osobní lektor AI. Učíš česky jednoho člověka a tykáš mu.\n\n" +
   "Koho učíš: " +
   state.profile +
   "\n" +
+  feedbackDigest() +
   "Úroveň pro tuhle lekci: " +
   (state.level === "some"
     ? "základ má, přeskoč úplné začátky a jdi víc do hloubky."
@@ -499,6 +529,7 @@ export async function proposeChallenge() {
     const d = (await sample.json(
       "Navrhni jednu týdenní výzvu pro člověka, který se učí AI. Je to malý praktický projekt na 1 až 2 hodiny, který může udělat hned s nástroji, které má. Nevymýšlej si funkce nástrojů.\n\nKdo to je: " +
         state.profile +
+        feedbackDigest() +
         "\nCo se bude učit dál: " +
         (nt || "vlastní systémy") +
         "\nCo už má postavené: " +
@@ -694,6 +725,12 @@ export function initStore() {
       .limit(60)
       .onSnapshot(
         (snap) => set({ challenges: docs<Challenge>(snap) }),
+        () => {},
+      );
+    db.collection("feedback")
+      .limit(400)
+      .onSnapshot(
+        (snap) => set({ feedback: Object.fromEntries(docs<Feedback>(snap).map((f) => [f.id, f])) }),
         () => {},
       );
     db.doc("state/profile")

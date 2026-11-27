@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { FeedbackBox } from "../components/FeedbackBox";
 import { Gauge } from "../components/Gauge";
 import { Lit } from "../components/ui";
 import { longDate, parseKey, plural, shortDate, todayKey, weekKey } from "../lib/dates";
@@ -82,7 +83,7 @@ function Hero({ s }: { s: State }) {
   );
 }
 
-function NewsRow({ it, i, open, onToggle }: { it: NewsItem; i: number; open: boolean; onToggle: () => void }) {
+function NewsRow({ it, i, open, onToggle, briefId }: { it: NewsItem; i: number; open: boolean; onToggle: () => void; briefId: string }) {
   const url = typeof it.url === "string" && it.url.startsWith("https://") ? it.url : null;
   const ask =
     "Vysvětli mi tuhle novinku a co s ní můžu prakticky udělat. Vycházej jen z tohoto shrnutí a nic si k ní nevymýšlej. Když ti něco chybí, řekni to.\n\n" +
@@ -120,6 +121,7 @@ function NewsRow({ it, i, open, onToggle }: { it: NewsItem; i: number; open: boo
                 </a>
               )}
             </div>
+            {open && <FeedbackBox id={"news-" + briefId + "-" + i} kind="news" title={String(it.title || "")} tag={it.tag} />}
           </div>
         </div>
       </div>
@@ -192,7 +194,7 @@ function BriefSection({ s }: { s: State }) {
         {items.length > 0 && (
           <div className="rowsx">
             {items.map((it, i) => (
-              <NewsRow key={i} it={it} i={i} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
+              <NewsRow key={i} it={it} i={i} briefId={brief!.id} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
             ))}
           </div>
         )}
