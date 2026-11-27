@@ -1,4 +1,4 @@
-# Rozjezd
+# AI akcelerátor
 
 Osobní ranní aplikace pro učení AI. Běží jako Claude Artifact: https://claude.ai/artifact/788QXdgtE75gkvDaXc7aYE
 
