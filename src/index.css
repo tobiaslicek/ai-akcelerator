@@ -124,6 +124,9 @@ button{cursor:pointer}
 .tagp{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;letter-spacing:0;font-weight:400;color:var(--ink-2);white-space:nowrap}
 .tagp::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--g);box-shadow:0 0 12px var(--g)}
 .rowx:hover>button,.rowx.open>button{color:var(--ink);padding-left:14px}
+.rowx>button:focus-visible{outline:none;color:var(--ink);padding-left:14px}
+.rowx:focus-within::before{opacity:.28}
+.rowx.open:focus-within::before{opacity:.5}
 .rowx .more{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .45s var(--ease-out),visibility 0s .45s}
 .rowx.open .more{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .45s var(--ease-out)}
 .rowx .more>div{overflow:hidden;min-height:0}
