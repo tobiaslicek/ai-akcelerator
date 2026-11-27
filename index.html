@@ -1,0 +1,1236 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Rozjezd</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300..600;1,300..500&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: tmavá plocha se září, velké geometrické minusky vlevo, svítící oblouk vpravo, plovoucí lišta dole. */
+:root{
+  --page:#060609;--card:#14141A;--tint:#20202A;
+  --ink:#FFFFFF;--ink-2:rgba(255,255,255,.7);--ink-3:rgba(255,255,255,.46);
+  --accent:#FF5A2A;--on-accent:#0B0605;--amber:#FFB36B;
+  --dial:#121218;--dial-ink:#FFFFFF;--dial-2:rgba(255,255,255,.66);--dial-cell:#23232D;
+  --line:rgba(255,255,255,.1);--line-strong:rgba(255,255,255,.24);
+  --ok:#7FD3A0;--bad:#FF8A7D;
+  --glass:rgba(30,30,38,.62);
+  --shadow:0 18px 34px -20px rgba(0,0,0,.9);
+  --shadow-lg:0 44px 76px -34px rgba(0,0,0,.95);
+  --ease:cubic-bezier(.16,1,.3,1);--ease-out:cubic-bezier(.23,1,.32,1);--spring:cubic-bezier(.34,1.4,.64,1);
+  --serif:"Jost","Century Gothic",Futura,"Trebuchet MS",sans-serif;
+  --sans:"Jost","Century Gothic",Futura,"Trebuchet MS",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{overflow-x:clip}
+body{background:var(--page);color:var(--ink);font:400 17px/1.5 var(--sans);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow-x:clip}
+h1,h2,h3,h4,p,ol,ul,dl,dd,fieldset{margin:0;padding:0}
+fieldset{border:0;min-width:0}
+ol,ul{list-style:none}
+a{color:inherit;text-underline-offset:4px;text-decoration-thickness:1.5px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:10px}
+.quiet{color:var(--ink-2)}
+.app{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:0 calc(128px + env(safe-area-inset-bottom,0px))}
+
+.nav{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;display:flex;gap:2px;padding:6px;max-width:calc(100% - 16px);overflow-x:auto;scrollbar-width:none;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);box-shadow:0 18px 38px -16px rgba(0,0,0,.45),0 4px 10px -4px rgba(0,0,0,.18)}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;padding:10px 16px;border-radius:999px;font-weight:600;font-size:14.5px;color:var(--ink-2);text-decoration:none;white-space:nowrap;transition:background-color 180ms ease,color 180ms ease,transform 160ms var(--ease-out)}
+.nav a:active{transform:scale(.95)}
+.nav a[aria-current="page"]{background:#fff;color:#060609}
+
+.title{text-transform:lowercase;font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 1;font-weight:400;font-size:clamp(44px,9.5vw,88px);line-height:.92;letter-spacing:-.04em;text-wrap:balance}
+.title i{font-weight:300;color:var(--ink-2)}
+.page-head{padding-top:clamp(48px,7vw,84px);display:grid;gap:12px;margin-bottom:34px}
+.page-head .quiet{max-width:56ch;font-size:16.5px}
+
+.hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:26px;padding-top:clamp(40px,6vw,84px)}
+.hero::before,.hero::after{content:"";position:absolute;z-index:-1;border-radius:50%;filter:blur(80px);pointer-events:none}
+.hero::before{width:min(640px,86vw);aspect-ratio:1;right:-16%;top:16%;background:radial-gradient(circle,#FF7A2F,#C2361B 55%,transparent 72%);opacity:.72}
+.hero::after{width:min(400px,54vw);aspect-ratio:1;right:24%;top:-14%;background:radial-gradient(circle,#2B4BFF,transparent 70%);opacity:.5}
+.hero-copy{display:grid;gap:14px;min-width:0;align-content:center}
+.date{color:var(--ink-2)}
+.hello{font:400 clamp(60px,12vw,152px)/.86 var(--serif);letter-spacing:-.045em;text-transform:lowercase}
+.tagline{font:italic 300 clamp(24px,3.6vw,38px)/1.1 var(--serif);color:var(--ink-2)}
+.lead{font-weight:300;font-size:19px;color:var(--ink-2);max-width:34ch}
+.stage{width:min(440px,100%);justify-self:center}
+.dial{display:block;width:100%;aspect-ratio:1;border:0;padding:0;background:none;border-radius:50%;-webkit-tap-highlight-color:transparent}
+.dial svg{display:block;width:100%;height:100%;overflow:visible}
+.dial:focus-visible{outline-offset:8px;border-radius:50%}
+.steps{display:grid;gap:10px;align-content:start}
+.step{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:14px;width:100%;padding:13px 20px 13px 14px;border:0;border-radius:26px;background:rgba(255,255,255,.09);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);text-align:left;transition:transform 160ms var(--ease-out),background-color 160ms ease}
+.step:hover{background:rgba(255,255,255,.13)}
+.step:active{transform:scale(.985)}
+.ring{width:30px;height:30px;border-radius:50%;border:2px solid var(--line-strong);display:grid;place-items:center;flex:none;transition:background-color 220ms ease,border-color 220ms ease,transform 300ms var(--spring)}
+.ring::after{content:"";width:11px;height:6px;border-left:2.4px solid var(--on-accent);border-bottom:2.4px solid var(--on-accent);transform:translateY(-1.5px) rotate(-45deg) scale(0);transition:transform 260ms var(--spring)}
+.is-done>.ring,.ring.on{background:#fff;border-color:#fff}
+.is-done>.ring::after,.ring.on::after{transform:translateY(-1.5px) rotate(-45deg) scale(1)}
+.step b{display:block;font-weight:500}
+.step small{display:block;color:var(--ink-2);font-size:14.5px}
+.step em{font-style:normal;font-weight:500;font-size:14.5px;color:var(--amber)}
+@media (min-width:900px){
+  .hero{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);column-gap:32px;align-items:center}
+  .steps{grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .step{grid-template-columns:30px minmax(0,1fr);border-radius:999px}
+  .step em{display:none}
+}
+
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;margin:64px 0 20px}
+.sec-head h2{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:520;font-size:clamp(27px,5.6vw,38px);line-height:1.06;letter-spacing:-.018em;text-wrap:balance;max-width:24ch}
+.sec-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:999px;border:1px solid transparent;font-weight:600;font-size:15.5px;background:transparent;text-decoration:none;transition:transform 160ms var(--ease-out),background-color 160ms ease,opacity 160ms ease}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--ink);color:var(--page)}
+.btn.hot{background:var(--accent);color:var(--on-accent)}
+.btn.ghost{border-color:var(--line-strong)}
+.btn.sm{min-height:38px;padding:0 16px;font-size:14.5px}
+.btn[disabled]{opacity:.45;cursor:default}
+.link{background:none;border:0;padding:6px 2px;color:var(--ink-2);font-weight:600;font-size:14.5px;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.link:hover{color:var(--accent)}
+.card{background:var(--card);border-radius:26px;padding:26px;box-shadow:var(--shadow)}
+.field{width:100%;padding:12px 16px;border-radius:16px;border:1px solid var(--line-strong);background:var(--card)}
+.field::placeholder{color:var(--ink-3)}
+.pill{display:inline-flex;align-items:center;padding:3px 11px;border-radius:999px;background:var(--tint);font-size:13.5px;font-weight:600}
+.pill.due{background:var(--accent);color:var(--on-accent)}
+
+.daynav{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:14.5px;font-variant-numeric:tabular-nums}
+.news{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.item{display:grid;gap:12px;align-content:start;min-width:0}
+.item-meta{display:flex;align-items:center;gap:10px;color:var(--ink-2);font-size:14px;font-variant-numeric:tabular-nums}
+.item h3{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:540;font-size:23px;line-height:1.12;letter-spacing:-.012em;text-wrap:balance}
+.item>p{max-width:64ch}
+.use{display:grid;gap:12px;padding-top:14px;border-top:1px solid var(--line)}
+.use dt{font-size:13.5px;color:var(--ink-2);font-weight:600}
+.item-actions{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-top:4px}
+.item-actions a{color:var(--ink-2);font-size:14.5px}
+@media (min-width:900px){
+  .news{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .item:first-child{grid-column:1/-1}
+  .item:first-child h3{font-size:34px}
+  .item:first-child .use{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px}
+}
+.rowsx{display:grid}
+.rowx{position:relative;isolation:isolate;border-bottom:1px solid var(--line)}
+.rowx::before{content:"";position:absolute;z-index:-1;inset:-10px -40px;background:radial-gradient(60% 140% at 12% 50%,var(--g),transparent 70%);filter:blur(34px);opacity:0;transition:opacity .45s ease;pointer-events:none}
+.rowx:hover::before{opacity:.28}
+.rowx.open::before{opacity:.5}
+.rowx>button{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:baseline;width:100%;text-align:left;background:none;border:0;color:var(--ink-2);padding:20px 0;font:300 clamp(23px,3.3vw,40px)/1.08 var(--serif);letter-spacing:-.025em;transition:color .25s ease,padding .35s var(--ease-out)}
+.rowx>button i{font-style:normal;font-size:16px;letter-spacing:0;color:var(--ink-3)}
+.tagp{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;letter-spacing:0;font-weight:400;color:var(--ink-2);white-space:nowrap}
+.tagp::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--g);box-shadow:0 0 12px var(--g)}
+.rowx:hover>button,.rowx.open>button{color:var(--ink);padding-left:14px}
+.rowx .more{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .45s var(--ease-out),visibility 0s .45s}
+.rowx.open .more{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .45s var(--ease-out)}
+.rowx .more>div{overflow:hidden;min-height:0}
+.rowx .inner{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px 32px;padding:0 0 26px 72px}
+.rowx .inner>p{grid-column:1/-1;max-width:62ch;color:var(--ink-2)}
+.rowx .inner>.item-actions{grid-column:1/-1}
+.kv{display:grid;gap:4px;align-content:start}
+.kv b{font-weight:500;font-size:14.5px;color:var(--ink-3)}
+@media (max-width:640px){.rowx>button{grid-template-columns:30px minmax(0,1fr)}.rowx>button .tagp{display:none}.rowx .inner{padding-left:0}}
+.empty{display:grid;gap:10px;max-width:60ch}
+.read-row{display:flex;justify-content:center;margin-top:26px}
+
+.challenge{background:radial-gradient(120% 150% at 100% 100%,rgba(255,106,42,.6),transparent 62%),radial-gradient(70% 90% at 0 0,rgba(43,75,255,.35),transparent 70%),var(--dial);color:var(--dial-ink);border-radius:30px;padding:clamp(24px,4vw,40px);display:grid;gap:22px;box-shadow:var(--shadow-lg)}
+.challenge h3{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 1;font-weight:500;font-size:clamp(26px,5vw,40px);line-height:1.04;letter-spacing:-.02em;text-wrap:balance;max-width:22ch}
+.challenge p{color:var(--dial-2);max-width:58ch}
+.ch-steps{display:grid;gap:4px}
+.ch-step{display:grid;grid-template-columns:30px minmax(0,1fr);gap:14px;align-items:center;width:100%;padding:10px 0;border:0;background:none;color:inherit;text-align:left}
+.ch-step .ring{border-color:rgba(242,240,234,.3)}
+.ch-step.is-done span:last-child{color:var(--dial-2);text-decoration:line-through}
+.challenge .btn.ghost{border-color:rgba(242,240,234,.3);color:var(--dial-ink)}
+.foot{display:flex;justify-content:center;margin-top:56px}
+
+.ask{display:grid;gap:14px;border-radius:30px;padding:18px}
+.ask textarea{border:0;background:transparent;resize:none;min-height:64px;padding:8px 10px;font-size:19px;line-height:1.4;width:100%;outline:none}
+.ask textarea::placeholder{color:var(--ink-3)}
+.ask-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.seg{display:inline-flex;padding:4px;border-radius:999px;background:var(--tint)}
+.seg label{padding:8px 15px;border-radius:999px;font-weight:600;font-size:14.5px;color:var(--ink-2);cursor:pointer;transition:background-color 180ms ease,color 180ms ease}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg input:checked+label{background:var(--card);color:var(--ink);box-shadow:0 2px 6px -2px rgba(0,0,0,.25)}
+.seg input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{border:1px solid var(--line-strong);background:transparent;border-radius:999px;padding:8px 15px;font-size:14.5px;font-weight:500;transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease,transform 160ms var(--ease-out)}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.notice{margin-top:18px;padding:14px 18px;border-radius:18px;background:var(--tint);max-width:62ch}
+.narrow{max-width:780px}
+
+.lesson{margin-top:34px;display:grid;gap:20px}
+.lesson-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.lesson-head h2{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:540;font-size:clamp(26px,5vw,34px);line-height:1.08;letter-spacing:-.018em;text-wrap:balance}
+.md{display:grid;gap:12px;max-width:66ch;min-width:0;font-size:16.5px;line-height:1.6}
+.md h2,.md h3,.md h4{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:560;font-size:21px;line-height:1.2;margin-top:12px}
+.md ul,.md ol{padding-left:1.4em;display:grid;gap:6px}
+.md ul{list-style:disc}
+.md ol{list-style:decimal}
+.md code{font-family:var(--mono);font-size:.88em;background:var(--tint);padding:.12em .4em;border-radius:6px;overflow-wrap:anywhere}
+.md pre{overflow-x:auto;background:var(--tint);border-radius:14px;padding:14px 16px}
+.md pre code{background:none;padding:0;overflow-wrap:normal}
+.q{justify-self:start;max-width:60ch;padding:10px 16px;border-radius:18px 18px 18px 4px;background:var(--tint);font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.err{color:var(--bad);font-weight:500}
+.follow{display:flex;gap:8px;max-width:66ch}
+.follow .field{min-width:0;border-radius:999px;padding-inline:20px}
+.quiz{display:grid;gap:24px;max-width:66ch}
+.qq{display:grid;gap:8px}
+.qq legend{font-weight:600;margin-bottom:10px;padding:0}
+.qq .topic{display:block;font-size:13.5px;color:var(--ink-2);font-weight:500;margin-bottom:2px}
+.opt{text-align:left;padding:12px 16px;border-radius:16px;border:1px solid var(--line-strong);background:transparent;transition:background-color 160ms ease,transform 160ms var(--ease-out)}
+.opt:hover:not([disabled]){background:var(--tint)}
+.opt:active:not([disabled]){transform:scale(.985)}
+.opt[disabled]{cursor:default}
+.opt.ok{border-color:var(--ok);box-shadow:inset 0 0 0 1.5px var(--ok)}
+.opt.bad{border-color:var(--bad);box-shadow:inset 0 0 0 1.5px var(--bad)}
+.why{color:var(--ink-2)}
+.score{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:540;font-size:21px}
+
+.rows{display:grid}
+.row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+button.ring{cursor:pointer;padding:0;background:transparent}
+button.ring:active{transform:scale(.9)}
+.row-main{min-width:0;background:none;border:0;padding:0;text-align:left;display:block;text-decoration:none}
+.row-name{display:block;font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-size:19.5px;font-weight:520;line-height:1.18}
+.row-sub{display:block;font-size:14px;color:var(--ink-2);margin-top:3px}
+.row-main:hover .row-name{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.row-end{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.stage-block{margin-top:44px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px 40px}
+.stage-head{display:flex;align-items:baseline;gap:14px}
+.stage-n{font-family:var(--serif);font-style:italic;font-variation-settings:"SOFT" 100,"WONK" 1;font-weight:400;font-size:64px;line-height:.9;color:var(--accent)}
+.stage-head h2{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:520;font-size:28px;line-height:1.05;letter-spacing:-.015em}
+.stage-head small{display:block;font:400 14.5px/1.4 var(--sans);color:var(--ink-2);letter-spacing:0;margin-top:4px}
+@media (min-width:900px){.stage-block{grid-template-columns:260px minmax(0,1fr)}.stage-head{display:grid;align-content:start;gap:8px;position:sticky;top:calc(24px + env(safe-area-inset-top,0px));align-self:start}}
+.review{margin-bottom:8px;display:grid;gap:20px}
+.review-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.review-head h2{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:540;font-size:25px;line-height:1.1}
+
+.picks{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:760px){.picks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1040px){.picks{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pick{display:grid;gap:10px;align-content:start;padding:22px}
+.pick.is-done{opacity:.6}
+.pick h3{font-family:var(--serif);font-variation-settings:"SOFT" 100,"WONK" 0;font-weight:540;font-size:20.5px;line-height:1.15}
+.pick h3 a{text-decoration:none}
+.pick h3 a:hover{text-decoration:underline;text-decoration-thickness:1.5px}
+.pick-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;font-size:14px;color:var(--ink-2)}
+.add{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:28px}
+.add .field{border-radius:999px;padding-inline:20px}
+@media (min-width:760px){.add.two{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto}.add.sys{grid-template-columns:minmax(0,1.2fr) 150px 130px auto}}
+.add .wide{grid-column:1/-1}
+
+.sum{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:radial-gradient(120% 160% at 100% 100%,rgba(255,106,42,.55),transparent 62%),var(--dial);color:var(--dial-ink);border-radius:30px;padding:26px 30px;box-shadow:var(--shadow-lg)}
+.sum .digits b{width:34px;height:48px;font-size:28px;border-radius:8px}
+.sum .digits s{align-self:end;text-decoration:none;font:600 28px/1 var(--mono);color:var(--amber);padding:0 2px 8px}
+.sum p{color:var(--dial-2);max-width:36ch}
+.sum strong{color:var(--dial-ink);font-weight:600;display:block}
+.sys-min{width:84px;padding:8px 12px;border-radius:999px;text-align:right;font-variant-numeric:tabular-nums}
+.group-h{font-size:14.5px;color:var(--ink-2);font-weight:600;margin:34px 0 4px}
+
+#view-ucit-se{--pg:#3B5BFF}
+#view-trasa{--pg:#FF6A2A}
+#view-knihovna{--pg:#FF2E7E}
+#view-systemy{--pg:#8B5CFF}
+@keyframes drift{0%{transform:translate(0,0)}50%{transform:translate(-5%,6%)}100%{transform:translate(0,0)}}
+.page-head{position:relative}
+.page-head::before{content:"";position:absolute;z-index:-1;width:min(560px,80vw);aspect-ratio:1;right:-14%;top:-46%;border-radius:50%;filter:blur(90px);background:radial-gradient(circle,var(--pg),transparent 68%);opacity:.55;pointer-events:none;animation:drift 16s ease-in-out infinite}
+.page-head::after{content:"";position:absolute;z-index:-1;width:min(300px,46vw);aspect-ratio:1;right:30%;top:-70%;border-radius:50%;filter:blur(80px);background:radial-gradient(circle,#FF7A2F,transparent 70%);opacity:.3;pointer-events:none}
+#view-trasa .page-head::after{background:radial-gradient(circle,#2B4BFF,transparent 70%);opacity:.4}
+.card{background:rgba(255,255,255,.055);box-shadow:none}
+.field{background:rgba(255,255,255,.07);border-color:transparent}
+.field:focus{outline:2px solid rgba(255,255,255,.5);outline-offset:1px}
+.pill{background:rgba(255,255,255,.1)}
+.chip:hover{background:rgba(255,255,255,.1)}
+.ask{position:relative;isolation:isolate;background:rgba(255,255,255,.07)}
+.ask::before{content:"";position:absolute;z-index:-1;inset:-34px;border-radius:60px;background:radial-gradient(70% 120% at 20% 100%,var(--pg),transparent 70%),radial-gradient(50% 100% at 90% 0,#FF6A2A,transparent 70%);filter:blur(46px);opacity:.3;transition:opacity .5s ease;pointer-events:none}
+.ask:focus-within::before{opacity:.65}
+.seg{background:rgba(255,255,255,.08)}
+.seg input:checked+label{background:#fff;color:#060609;box-shadow:none}
+.row{position:relative;isolation:isolate;padding:17px 0}
+.row::before{content:"";position:absolute;z-index:-1;inset:-8px -40px;background:radial-gradient(60% 150% at 10% 50%,var(--g,var(--pg)),transparent 70%);filter:blur(32px);opacity:0;transition:opacity .45s ease;pointer-events:none}
+.row:hover::before,.row:focus-within::before{opacity:.3}
+.row-name{font:300 clamp(20px,2.5vw,29px)/1.12 var(--serif);letter-spacing:-.022em;color:var(--ink-2);transition:color .25s ease}
+.row:hover .row-name,.row:focus-within .row-name{color:var(--ink)}
+.row-main:hover .row-name{text-decoration:none}
+.row-sub{font-size:15px;margin-top:5px}
+.stage-block:nth-of-type(1){--g:#FFB36B}
+.stage-block:nth-of-type(2){--g:#FF6A2A}
+.stage-block:nth-of-type(3){--g:#FF2E7E}
+.stage-block:nth-of-type(4){--g:#8B5CFF}
+.stage-block:nth-of-type(5){--g:#3B5BFF}
+.stage-block:nth-of-type(6){--g:#19C3A6}
+.stage-n{font:300 104px/.8 var(--serif);letter-spacing:-.05em;color:var(--g);text-shadow:0 0 44px var(--g)}
+.stage-head h2{font-weight:400;font-size:30px;letter-spacing:-.02em}
+.review{position:relative;isolation:isolate;overflow:hidden}
+.review::before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(520px circle at 100% 0,#FF6A2A,transparent 62%);opacity:.4}
+.pick{position:relative;overflow:hidden;isolation:isolate;background:rgba(255,255,255,.045)}
+.pick::before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(380px circle at var(--mx,86%) var(--my,0%),var(--g,var(--pg)),transparent 62%);opacity:var(--o,.32);transition:opacity .4s ease}
+.pick h3{font:400 24px/1.1 var(--serif);letter-spacing:-.018em}
+.sum{border-radius:34px}
+.group-h{color:var(--ink-3)}
+.lesson-head h2{font-weight:400}
+@media (prefers-reduced-motion:reduce){.page-head::before{animation:none}}
+.lit .w{display:inline-block}
+.lit.play .w{animation:lit .6s var(--ease) both}
+@keyframes lit{from{color:var(--ink-3);transform:translateY(.22em);filter:blur(5px)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);z-index:30;padding:11px 18px;border-radius:999px;background:var(--ink);color:var(--page);font-weight:600;font-size:14.5px;opacity:0;pointer-events:none;transition:opacity 200ms ease,transform 240ms var(--ease-out);max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:520px){
+  .nav a{padding:9px 11px;font-size:13.5px}
+  .card{padding:22px;border-radius:24px}
+  .row{gap:12px}
+  .row-end{grid-column:2;justify-content:flex-start}
+  .row.has-end{grid-template-columns:30px minmax(0,1fr)}
+  .follow{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <main>
+    <section id="view-dnes">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="date hero-line" id="when"></p>
+          <h1 class="hello hero-line" id="hello-h">dobré ráno</h1>
+          <p class="tagline hero-line" id="hello2">roztoč to.</p>
+          <p class="lead hero-line" id="lead"></p>
+        </div>
+        <div class="stage" id="stage">
+          <button class="dial" id="dial" type="button">
+            <svg viewBox="0 0 400 400" aria-hidden="true">
+              <defs><linearGradient id="glow" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FFB36B"></stop><stop offset=".6" stop-color="#FF5A2A"></stop><stop offset="1" stop-color="#FF2E7E"></stop></linearGradient></defs>
+              <path d="M54.51 284 A168 168 0 1 1 345.49 284" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="16" stroke-linecap="round"></path>
+              <path id="arc" d="M54.51 284 A168 168 0 1 1 345.49 284" fill="none" stroke="url(#glow)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" style="filter:drop-shadow(0 0 14px rgba(255,110,50,.75))"></path>
+              <circle id="g-dot" cx="54.51" cy="284" r="11" fill="#fff" style="filter:drop-shadow(0 0 10px #fff)"></circle>
+              <text id="g-num" x="200" y="246" text-anchor="middle" fill="#fff" font-size="170" font-weight="300" font-family="Jost,Futura,sans-serif">0</text>
+              <text x="200" y="292" text-anchor="middle" fill="rgba(255,255,255,.66)" font-size="20" font-family="Jost,Futura,sans-serif">ze 3 kroků</text>
+              <text id="streak-label" x="200" y="352" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="17" font-family="Jost,Futura,sans-serif"></text>
+            </svg>
+          </button>
+        </div>
+        <div class="steps" id="steps"></div>
+      </div>
+
+      <div class="sec-head"><h2 id="headline">Načítám brief…</h2><div class="sec-tools"><div class="daynav" id="daynav" hidden><button class="btn ghost sm" type="button" id="older">Starší</button><span id="daylabel"></span><button class="btn ghost sm" type="button" id="newer">Novější</button></div><button class="btn primary sm" type="button" id="listen" hidden>Poslechnout</button></div></div>
+      <div id="news"></div>
+
+      <div class="sec-head"><h2>Výzva týdne</h2></div>
+      <div id="challenge"></div>
+      <div class="foot"><button class="btn ghost" type="button" id="install" hidden>Nainstalovat jako appku</button></div>
+    </section>
+
+    <section id="view-ucit-se" hidden>
+      <div class="narrow">
+        <div class="page-head"><h1 class="title">Co se chceš <i>naučit?</i></h1></div>
+        <form class="card ask" id="ask">
+          <textarea id="ask-q" rows="2" placeholder="Napiš téma nebo otázku. Třeba: jak funguje MCP a k čemu mi bude" aria-label="Téma nebo otázka"></textarea>
+          <div class="ask-row">
+            <fieldset class="seg">
+              <input type="radio" name="level" id="lvl-zero" value="zero" checked><label for="lvl-zero">Od nuly</label>
+              <input type="radio" name="level" id="lvl-some" value="some"><label for="lvl-some">Základ mám</label>
+            </fieldset>
+            <div class="actions"><button class="btn ghost" type="button" id="mic" hidden aria-pressed="false">Diktovat</button><button class="btn hot" type="submit">Vysvětli mi to</button></div>
+          </div>
+        </form>
+        <div class="chips" id="chips"></div>
+        <p class="notice" id="tutor-off" hidden>Lektor odpovídá, jen když je stránka otevřená v Claude a má povoleno ptát se Clauda.</p>
+        <article class="card lesson" id="lesson" hidden></article>
+        <div class="sec-head"><h2>Zápisník</h2></div>
+        <div id="notes"></div>
+      </div>
+    </section>
+
+    <section id="view-trasa" hidden>
+      <div class="page-head"><h1 class="title">Trasa <i>od základů</i></h1><p class="quiet" id="route-sub"></p></div>
+      <div id="review"></div>
+      <div id="route"></div>
+    </section>
+
+    <section id="view-knihovna" hidden>
+      <div class="page-head"><h1 class="title">Knihovna <i>na později</i></h1><p class="quiet" id="lib-sub"></p></div>
+      <div id="lib"></div>
+    </section>
+
+    <section id="view-systemy" hidden>
+      <div class="page-head"><h1 class="title">Tvoje <i>systémy</i></h1><p class="quiet">Všechno, co za tebe pracuje, a nápady, co postavit dál. U každého si zapiš, kolik minut týdně ti šetří.</p></div>
+      <div id="sys"></div>
+    </section>
+  </main>
+</div>
+<nav class="nav" aria-label="Části aplikace">
+  <a href="#dnes" data-tab="dnes">Dnes</a>
+  <a href="#ucit-se" data-tab="ucit-se">Učit se</a>
+  <a href="#trasa" data-tab="trasa">Trasa</a>
+  <a href="#knihovna" data-tab="knihovna">Knihovna</a>
+  <a href="#systemy" data-tab="systemy">Systémy</a>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const STAGES = [
+    ['Základy', 'Jak AI funguje', [
+      ['llm', 'Jak jazykový model přemýšlí', 'Tokeny, pravděpodobnost a proč si občas vymýšlí'],
+      ['context', 'Kontextové okno a paměť', 'Co model vidí, co zapomíná a proč na tom stojí všechno ostatní'],
+      ['models', 'Modely a kdy který použít', 'Rychlý, vyvážený, nejchytřejší: cena, rychlost, kvalita'],
+      ['api', 'Co je API a API klíč', 'Jak spolu programy mluví a proč klíč nikomu neukazovat'],
+      ['json', 'JSON: jak ho číst a psát', 'Formát, kterým si nástroje předávají data']]],
+    ['Zadání', 'Jak s AI mluvit', [
+      ['prompt', 'Anatomie dobrého zadání', 'Cíl, kontext, omezení a formát výstupu'],
+      ['examples', 'Příklady a reference', 'Proč jedna ukázka vydá za deset vět popisu'],
+      ['iterate', 'Iterace a zpětná vazba', 'Jak z prvního pokusu udělat dobrý výsledek'],
+      ['instructions', 'Trvalé instrukce (CLAUDE.md)', 'Jak naučit Claude svůj styl jednou provždy'],
+      ['verify', 'Ověřování výstupů', 'Jak poznat chybu dřív, než ji pošleš dál']]],
+    ['Nástroje', 'Co Claude umí kolem sebe', [
+      ['skills', 'Skills: kdy a jak je psát', 'Zabalený postup, který Claude použije sám'],
+      ['mcp', 'MCP a konektory', 'Jak Claude připojit k Outlooku, SharePointu a dalším'],
+      ['subagents', 'Subagenti a paralelní práce', 'Rozděl úkol a pusť víc Claudů najednou'],
+      ['artifacts', 'Artifacts s daty', 'Stránky, které si pamatují a ptají se Clauda'],
+      ['scheduled', 'Plánované úlohy a hooks', 'Ať věci běží samy, i když u toho nesedíš']]],
+    ['Automatizace', 'Ať to běží bez tebe', [
+      ['workflow', 'Spouštěč a akce', 'Jak číst a navrhnout jakékoli workflow'],
+      ['webhook', 'Webhooky', 'Jak jedna aplikace dá vědět druhé, že se něco stalo'],
+      ['http', 'HTTP request a dokumentace API', 'Jak napojit službu, která nemá hotový konektor'],
+      ['n8n-make', 'n8n, nebo Make', 'V čem se liší a kdy sáhnout po kterém'],
+      ['errors', 'Chyby, logy a opakování', 'Co dělat, když automatizace v noci spadne']]],
+    ['Agenti', 'AI, která pracuje sama', [
+      ['agent', 'Co je agent', 'Model, nástroje a smyčka, která běží, dokud není hotovo'],
+      ['rag', 'Vlastní znalosti (RAG)', 'Jak dát AI firemní dokumenty, aniž bys ji trénoval'],
+      ['evals', 'Vyhodnocování', 'Jak měřit, jestli je systém lepší, nebo jen jiný'],
+      ['security', 'Bezpečnost a práva', 'Prompt injection, hesla a co agentovi nepovolit'],
+      ['cost', 'Náklady a tokeny', 'Kolik co stojí a kde se dá ušetřit']]],
+    ['Vlastní systémy', 'Tvůj Jarvis', [
+      ['audit', 'Zmapuj svůj týden', 'Co se opakuje, co zdržuje a co předat AI'],
+      ['knowledge', 'Znalostní báze', 'Jedno místo, odkud AI čerpá kontext o tvé práci'],
+      ['pipeline', 'Od nápadu k systému', 'Navrhni, postav, otestuj, zdokumentuj'],
+      ['maintain', 'Údržba a předání', 'Aby systém fungoval i za půl roku a pro kolegy']]],
+  ].map(([name, sub, topics], i) => ({ n: i + 1, name, sub, topics: topics.map(([id, title, hint]) => ({ id, title, hint, stage: name })) }));
+  const TOPICS = STAGES.flatMap(s => s.topics);
+  const TOPIC = Object.fromEntries(TOPICS.map(t => [t.id, t]));
+  const VIEWS = ['dnes', 'ucit-se', 'trasa', 'knihovna', 'systemy'];
+  const GAPS = [1, 7, 30, 90];
+  const KINDS = ['Skill', 'Automatizace', 'Appka', 'Jiné'];
+  const DEFAULT_PROFILE = 'Pracuje v marketingu. Staví weby v Claude Code, vizuály dělá v AI nástrojích na obraz a video a učí se AI automatizace (n8n, Make). Nemá pevné technické základy.';
+
+  const state = { view: 'dnes', briefs: [], briefIdx: 0, briefsReady: false, briefsLate: false, topics: {}, days: {}, notes: [], library: [], libTheme: 'Vše', systems: [], challenges: [], profile: DEFAULT_PROFILE, readOnly: false, lesson: null, review: null, newsOpen: 0, tutorOff: false, speaking: false, chBusy: false };
+
+  const $ = id => document.getElementById(id);
+  const h = (tag, attrs, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') n.className = v;
+      else if (k === 'text') n.textContent = v;
+      else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? '' : v);
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+    return n;
+  };
+  const svg = (tag, attrs) => { const n = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); return n; };
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const inline = s => s
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>')
+    .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  function md(src) {
+    const out = [];
+    let list = null, para = [], code = null;
+    const flushP = () => { if (para.length) { out.push('<p>' + inline(para.join(' ')) + '</p>'); para = []; } };
+    const flushL = () => { if (list) { out.push('</' + list + '>'); list = null; } };
+    const item = (type, text) => { flushP(); if (list !== type) { flushL(); out.push('<' + type + '>'); list = type; } out.push('<li>' + inline(text) + '</li>'); };
+    for (const raw of esc(src).split('\n')) {
+      if (code !== null) {
+        if (/^\s*```/.test(raw)) { out.push('<pre><code>' + code.join('\n') + '</code></pre>'); code = null; } else code.push(raw);
+        continue;
+      }
+      if (/^\s*```/.test(raw)) { flushP(); flushL(); code = []; continue; }
+      const line = raw.trim();
+      let m;
+      if (!line) { flushP(); continue; }
+      if ((m = line.match(/^(#{1,4})\s+(.*)$/))) { flushP(); flushL(); const lv = Math.min(4, m[1].length + 1); out.push('<h' + lv + '>' + inline(m[2]) + '</h' + lv + '>'); continue; }
+      if ((m = line.match(/^[-*•]\s+(.*)$/))) { item('ul', m[1]); continue; }
+      if ((m = line.match(/^\d+[.)]\s+(.*)$/))) { item('ol', m[1]); continue; }
+      flushL();
+      para.push(line);
+    }
+    if (code !== null) out.push('<pre><code>' + code.join('\n') + '</code></pre>');
+    flushP(); flushL();
+    return out.join('');
+  }
+
+  const use = name => (window.claude && typeof window.claude.use === 'function') ? window.claude.use(name).catch(() => null) : Promise.resolve(null);
+  const dbP = use('db'), sampleP = use('sample'), userP = use('user'), ttsP = use('tts'), dictP = use('dictation'), deskP = use('desktop');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function splitWords(el, base) {
+    const walk = node => {
+      for (const ch of [...node.childNodes]) {
+        if (ch.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          ch.textContent.split(/(\s+)/).forEach(part => { if (!part) return; if (/^\s+$/.test(part)) frag.append(' '); else { const w = document.createElement('span'); w.className = 'w'; w.textContent = part; frag.append(w); } });
+          ch.replaceWith(frag);
+        } else if (ch.nodeType === 1 && !ch.classList.contains('w')) walk(ch);
+      }
+    };
+    walk(el);
+    el.classList.add('lit');
+    [...el.querySelectorAll('.w')].forEach((w, i) => { w.style.animationDelay = ((base || 0) + i * 35) + 'ms'; });
+  }
+  function play(el) { if (calm || !el) return; el.classList.remove('play'); void el.offsetWidth; el.classList.add('play'); }
+  function setLit(el, text, base) {
+    if (el.dataset.t === text) return;
+    el.dataset.t = text; el.textContent = text;
+    splitWords(el, base); play(el);
+  }
+  function animateIn(root) {
+    if (calm || !root) return;
+    [...root.querySelectorAll('.step,.rowx,.row,.pick,.challenge,.ask,.sum,.stage-head,.review')].filter(e => e.offsetParent).slice(0, 18).forEach((e, i) => {
+      e.style.animation = 'none'; void e.offsetWidth;
+      e.style.animation = 'rise .7s var(--ease) ' + (120 + i * 45) + 'ms both';
+      e.addEventListener('animationend', () => { e.style.animation = ''; }, { once: true });
+    });
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('on'), 2600);
+  }
+
+  const pad = n => String(n).padStart(2, '0');
+  const keyOf = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const todayKey = () => keyOf(new Date());
+  const parseKey = k => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(k || '')); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; };
+  const addDays = (k, n) => { const d = parseKey(k) || new Date(); d.setDate(d.getDate() + n); return keyOf(d); };
+  const daysTo = k => { const a = parseKey(todayKey()), b = parseKey(k); return b ? Math.round((b - a) / 864e5) : 0; };
+  const longDate = d => d.toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
+  const shortDate = k => { const d = parseKey(k); return d ? d.getDate() + '. ' + (d.getMonth() + 1) + '.' : ''; };
+  const weekKey = () => { const d = new Date(); const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return t.getUTCFullYear() + '-W' + pad(Math.ceil(((t - y0) / 864e5 + 1) / 7)); };
+  const plural = (n, one, few, many) => n + ' ' + (n === 1 ? one : n >= 2 && n <= 4 ? few : many);
+
+  const savers = {};
+  function save(path, get) {
+    const s = savers[path] || (savers[path] = { busy: false, dirty: false });
+    if (s.busy) { s.dirty = true; return; }
+    s.busy = true;
+    (async () => {
+      try { const db = await dbP; if (db) await db.doc(path).set({ ...get(), updatedAt: Date.now() }); }
+      catch (e) { toast('Uložení se nepovedlo.'); }
+      finally { s.busy = false; if (s.dirty) { s.dirty = false; save(path, get); } }
+    })();
+  }
+  const saving = path => !!(savers[path] && (savers[path].busy || savers[path].dirty));
+
+  const isDone = id => !!state.topics[id];
+  const doneCount = () => TOPICS.filter(t => isDone(t.id)).length;
+  const nextTopic = () => TOPICS.find(t => !isDone(t.id)) || null;
+  const dueList = () => TOPICS.filter(t => state.topics[t.id] && (state.topics[t.id].due || '') <= todayKey());
+  const today = () => state.days[todayKey()] || {};
+  function markDay(step) {
+    if (state.readOnly || today()[step]) return;
+    const k = todayKey(), days = { ...state.days, [k]: { ...today(), [step]: true } };
+    for (const d of Object.keys(days)) if (daysTo(d) < -120) delete days[d];
+    state.days = days;
+    renderHero();
+    save('state/days', () => ({ days: state.days }));
+  }
+  function streak() {
+    const any = k => { const d = state.days[k]; return !!(d && (d.brief || d.review || d.lesson)); };
+    let k = todayKey(), n = 0;
+    if (!any(k)) k = addDays(k, -1);
+    while (any(k) && n < 999) { n++; k = addDays(k, -1); }
+    return n;
+  }
+  const currentBrief = () => state.briefs[state.briefIdx] || null;
+
+  const G = { v: 0, target: 0, booted: false, q: [], cur: null };
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const easeIO = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const easeBack = x => 1 + 2.70158 * Math.pow(x - 1, 3) + 1.70158 * Math.pow(x - 1, 2);
+  function drawGauge(v) {
+    const c = clamp(v, 0, 3), a = (-120 + c * 80) * Math.PI / 180;
+    $('arc').setAttribute('stroke-dasharray', (c / 3 * 100).toFixed(2) + ' 100');
+    $('arc').style.opacity = c > .01 ? 1 : 0;
+    $('g-dot').setAttribute('cx', (200 + 168 * Math.sin(a)).toFixed(2));
+    $('g-dot').setAttribute('cy', (200 - 168 * Math.cos(a)).toFixed(2));
+    $('g-num').textContent = String(Math.round(c));
+  }
+  function tween(steps) {
+    if (calm) { G.q = []; G.cur = null; G.v = G.target; drawGauge(G.v); return; }
+    G.q = steps.map(([to, ms, ease]) => ({ to, ms, ease: ease || easeIO }));
+  }
+  function tick(now) {
+    requestAnimationFrame(tick);
+    if (document.hidden || state.view !== 'dnes') return;
+    if (!G.cur && G.q.length) { G.cur = G.q.shift(); G.cur.from = G.v; G.cur.t0 = now; }
+    if (!G.cur) return;
+    const p = Math.min(1, (now - G.cur.t0) / G.cur.ms), to = typeof G.cur.to === 'function' ? G.cur.to() : G.cur.to;
+    G.v = G.cur.from + (to - G.cur.from) * G.cur.ease(p);
+    if (p >= 1) G.cur = null;
+    drawGauge(G.v);
+  }
+  const REV = [[3, 800], [3, 320], [2.2, 230], [3, 240], [3, 220], [() => G.target, 1150, easeBack]];
+
+  function renderHero() {
+    const hr = new Date().getHours();
+    const words = hr < 10 ? ['Dobré', 'ráno'] : hr < 18 ? ['Dobrý', 'den'] : ['Dobrý', 'večer'];
+    $('when').textContent = longDate(new Date()).replace(/^./, c => c.toUpperCase());
+    setLit($('hello-h'), words.join(' '), 0);
+    const due = dueList(), d = today(), nt = nextTopic();
+    const steps = [
+      { done: !!d.brief, title: 'Přečti si brief', sub: currentBrief() ? plural((currentBrief().items || []).length, 'novinka', 'novinky', 'novinek') + ' na míru' : 'Dnes tu zatím žádný není', go: () => $('headline').scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' }) },
+      { done: !!d.review || due.length === 0, title: 'Zopakuj si, co umíš', sub: d.review ? 'Hotovo' : due.length ? 'Čeká ' + plural(due.length, 'téma', 'témata', 'témat') : 'Dnes nic nečeká', go: () => { location.hash = 'trasa'; if (due.length && !state.review) startReview(); } },
+      { done: !!d.lesson, title: 'Nauč se jednu věc', sub: nt ? nt.title : 'Zeptej se lektora na cokoli', go: () => { if (nt && !d.lesson) startTopic(nt); else location.hash = 'ucit-se'; } },
+    ];
+    const n = steps.filter(s => s.done).length;
+    setLit($('hello2'), n === 3 ? 'jedeš naplno.' : n === 0 ? 'roztoč to.' : 'ještě přidej.', 260);
+    setLit($('lead'), n === 3 ? 'Dnešní rozjezd je hotový. Všechno navíc je bonus.' : 'Tři krátké kroky. Oblouk ukazuje, kolik jich dnes máš.', 420);
+    $('steps').replaceChildren(...steps.map(s => h('button', { class: 'step' + (s.done ? ' is-done' : ''), type: 'button', onclick: s.go },
+      h('span', { class: 'ring' }), h('span', {}, h('b', { text: s.title }), h('small', { text: s.sub })), !s.done && h('em', { text: 'Jdu na to' }))));
+    G.target = n;
+    if (G.booted && !G.cur && !G.q.length && Math.abs(G.v - n) > .01) tween([[() => G.target, 900, easeBack]]);
+    if (calm) drawGauge(n);
+    $('dial').setAttribute('aria-label', 'Dnešní rozjezd: ' + n + ' ze 3 kroků. Kliknutím protočíš motor.');
+    const st = streak();
+        $('streak-label').textContent = st + ' ' + (st === 1 ? 'den v řadě' : st >= 2 && st <= 4 ? 'dny v řadě' : 'dní v řadě');
+  }
+
+  function renderBrief() {
+    const brief = currentBrief(), headEl = $('headline'), news = $('news');
+    $('listen').hidden = !brief || !state.canSpeak;
+    $('listen').textContent = state.speaking ? 'Zastavit čtení' : 'Poslechnout';
+    if (!brief) {
+      $('daynav').hidden = true;
+      if (!state.briefsReady && !state.briefsLate) { setLit(headEl, 'Načítám brief…'); news.replaceChildren(); return; }
+      setLit(headEl, state.briefsReady ? 'Brief tu zatím není.' : 'Brief se nepodařilo načíst.');
+      news.replaceChildren(h('div', { class: 'card empty' }, h('p', { text: state.briefsReady
+        ? 'Novinky sem zapisuje Claude. Jakmile první brief dorazí, uvidíš tady, co je nového, proč se ti to hodí a co si na deset minut zkusit.'
+        : 'Data se zatím nepodařilo načíst. Otevři stránku v Claude a zkontroluj připojení.' })));
+      return;
+    }
+    const isToday = brief.date === todayKey();
+    setLit(headEl, brief.headline || 'Co je nového v AI');
+    const items = Array.isArray(brief.items) ? brief.items : [];
+    const TAGC = { Claude: '#FF6A2A', 'Vizuál': '#FF2E7E', Automatizace: '#3B5BFF', Modely: '#8B5CFF', 'Nástroje': '#19C3A6' };
+    const list = h('div', { class: 'rowsx' });
+    items.forEach((it, i) => {
+      const url = typeof it.url === 'string' && it.url.startsWith('https://') ? it.url : null;
+      const open = state.newsOpen === i;
+      const row = h('div', { class: 'rowx' + (open ? ' open' : ''), style: '--g:' + (TAGC[it.tag] || '#FF6A2A') });
+      const btn = h('button', { type: 'button', 'aria-expanded': String(open), onclick: () => {
+        const willOpen = !row.classList.contains('open');
+        for (const r of list.children) { r.classList.remove('open'); r.firstChild.setAttribute('aria-expanded', 'false'); }
+        if (willOpen) { row.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+        state.newsOpen = willOpen ? i : -1;
+      } }, h('i', { text: String(i + 1).padStart(2, '0') }), h('span', { text: it.title || '' }), h('span', { class: 'tagp', text: [it.tag, shortDate(it.date)].filter(Boolean).join(', ') }));
+      row.append(btn, h('div', { class: 'more' }, h('div', {}, h('div', { class: 'inner' },
+        it.summary && h('p', { text: it.summary }),
+        it.why && h('div', { class: 'kv' }, h('b', { text: 'Proč se ti to hodí' }), h('span', { text: it.why })),
+        it.try && h('div', { class: 'kv' }, h('b', { text: 'Zkus to na 10 minut' }), h('span', { text: it.try })),
+        h('div', { class: 'item-actions' },
+          h('button', { class: 'btn ghost sm', type: 'button', onclick: () => startLesson(String(it.title || 'Novinka'), { ask: 'Vysvětli mi tuhle novinku a co s ní můžu prakticky udělat. Vycházej jen z tohoto shrnutí a nic si k ní nevymýšlej. Když ti něco chybí, řekni to.\n\n' + [it.title, it.summary, it.why, it.try].filter(Boolean).join('\n') }) }, 'Vysvětli mi to'),
+          url && h('a', { href: url, target: '_blank', rel: 'noopener', text: 'Zdroj: ' + (it.source || 'odkaz') }))))));
+      list.append(row);
+    });
+    const kids = [];
+    if (!isToday) kids.push(h('p', { class: 'quiet', style: 'margin-bottom:16px', text: (state.briefIdx === 0 ? 'Poslední brief je z ' : 'Brief z ') + (parseKey(brief.date) ? longDate(parseKey(brief.date)) : brief.date) + '.' + (state.briefIdx === 0 ? ' Novější tu zatím není.' : '') }));
+    kids.push(items.length ? list : h('div', { class: 'card empty' }, h('p', { text: 'Tenhle brief nemá žádné položky.' })));
+    if (items.length && state.briefIdx === 0 && !state.readOnly) kids.push(h('div', { class: 'read-row' }, h('button', { class: 'btn ' + (today().brief ? 'ghost' : 'hot'), type: 'button', disabled: !!today().brief, onclick: () => { markDay('brief'); renderBrief(); } }, today().brief ? 'Brief máš přečtený' : 'Mám přečteno')));
+    news.replaceChildren(...kids);
+    $('daynav').hidden = state.briefs.length < 2;
+    $('daylabel').textContent = shortDate(brief.date);
+    $('older').disabled = state.briefIdx >= state.briefs.length - 1;
+    $('newer').disabled = state.briefIdx <= 0;
+  }
+
+  function renderChallenge() {
+    const box = $('challenge'), wk = weekKey();
+    const ch = state.challenges.find(c => c.id === wk);
+    if (!ch) {
+      box.replaceChildren(h('div', { class: 'challenge' },
+        h('h3', { text: 'Na tenhle týden tu výzva není.' }),
+        h('p', { text: 'Výzva je jeden malý projekt na hodinu až dvě, navázaný na to, co se zrovna učíš. Lektor ti ji navrhne podle tvé trasy.' }),
+        !state.readOnly && h('div', {}, h('button', { class: 'btn ghost', type: 'button', disabled: state.chBusy || state.tutorOff, onclick: proposeChallenge }, state.chBusy ? 'Vymýšlím…' : 'Navrhnout výzvu'))));
+      return;
+    }
+    const steps = Array.isArray(ch.steps) ? ch.steps : [];
+    const left = steps.filter(s => !s.done).length;
+    box.replaceChildren(h('div', { class: 'challenge' },
+      h('h3', { text: ch.title || 'Výzva týdne' }),
+      ch.why && h('p', { text: ch.why }),
+      h('div', { class: 'ch-steps' }, steps.map((s, i) => h('button', { class: 'ch-step' + (s.done ? ' is-done' : ''), type: 'button', 'aria-pressed': String(!!s.done), disabled: state.readOnly, onclick: () => toggleChStep(ch, i) }, h('span', { class: 'ring' }), h('span', { text: s.text })))),
+      h('p', { text: steps.length && !left ? 'Výzva je splněná. Zapiš si ji do Systémů, ať o ní víš.' : 'Zbývá ' + plural(left, 'krok', 'kroky', 'kroků') + '.' })));
+  }
+  async function toggleChStep(ch, i) {
+    const db = await dbP;
+    if (!db || state.readOnly) return;
+    const steps = ch.steps.map((s, j) => j === i ? { ...s, done: !s.done } : { ...s });
+    const { id, ...rest } = ch;
+    state.challenges = state.challenges.map(c => c.id === id ? { ...ch, steps } : c);
+    renderChallenge();
+    db.collection('challenges').doc(id).set({ ...rest, steps, updatedAt: Date.now() }).catch(() => toast('Uložení se nepovedlo.'));
+  }
+  async function proposeChallenge() {
+    const [sample, db] = await Promise.all([sampleP, dbP]);
+    if (!sample || !db || state.chBusy) return;
+    state.chBusy = true; renderChallenge();
+    const nt = TOPICS.filter(t => !isDone(t.id)).slice(0, 3).map(t => t.title).join(', ');
+    try {
+      const d = await sample.json('Navrhni jednu týdenní výzvu pro člověka, který se učí AI. Je to malý praktický projekt na 1 až 2 hodiny, který může udělat hned s nástroji, které má. Nevymýšlej si funkce nástrojů.\n\nKdo to je: ' + state.profile + '\nCo se bude učit dál: ' + (nt || 'vlastní systémy') + '\nCo už má postavené: ' + (state.systems.map(s => s.name).join(', ') || 'zatím nic') + '\n\nOdpověz česky, tykej, pouze JSON objektem {"title": krátký název do 60 znaků, "why": jedna věta proč zrovna tohle, "steps": pole 3 až 5 krátkých kroků jako řetězce}.', { cache: false });
+      const steps = (Array.isArray(d && d.steps) ? d.steps : []).map(s => ({ text: String(s).slice(0, 240), done: false })).slice(0, 6);
+      if (!d || typeof d.title !== 'string' || !steps.length) throw { code: 'invalid_json' };
+      await db.collection('challenges').doc(weekKey()).set({ week: weekKey(), title: d.title.slice(0, 120), why: String(d.why || '').slice(0, 400), steps, createdAt: Date.now() });
+    } catch (e) { toast(errText(e)); }
+    finally { state.chBusy = false; renderChallenge(); }
+  }
+
+  function topicStatus(t) {
+    const p = state.topics[t.id];
+    if (!p) return null;
+    if ((p.due || '') <= todayKey()) return h('span', { class: 'pill due', text: 'Čeká na opakování' });
+    if ((p.stage || 0) >= 3) return h('span', { class: 'pill', text: 'Usazeno' });
+    return h('span', { class: 'pill', text: 'Opakování za ' + plural(daysTo(p.due), 'den', 'dny', 'dní') });
+  }
+  function renderRoute() {
+    const nt = nextTopic();
+    $('route-sub').textContent = 'Šest etap, ' + TOPICS.length + ' témat. Hotovo máš ' + doneCount() + '. Klikni na téma a lektor ti ho vysvětlí. Co odškrtneš, se ti vrátí k zopakování za den, týden a měsíc.';
+    $('route').replaceChildren(...STAGES.map(s => h('section', { class: 'stage-block', 'aria-label': s.n + '. etapa: ' + s.name },
+      h('div', { class: 'stage-head' }, h('span', { class: 'stage-n', text: s.n }), h('h2', {}, s.name, h('small', { text: s.sub + ', ' + s.topics.filter(t => isDone(t.id)).length + ' z ' + s.topics.length }))),
+      h('div', { class: 'rows' }, s.topics.map(t => {
+        const done = isDone(t.id), st = topicStatus(t), isNext = nt && nt.id === t.id;
+        return h('div', { class: 'row' + (st || isNext ? ' has-end' : '') },
+          h('button', { class: 'ring' + (done ? ' on' : ''), type: 'button', disabled: state.readOnly, 'aria-pressed': String(done), 'aria-label': (done ? 'Zrušit hotovo: ' : 'Označit jako hotové: ') + t.title, onclick: () => toggleTopic(t.id) }),
+          h('button', { class: 'row-main', type: 'button', onclick: () => startTopic(t) }, h('span', { class: 'row-name', text: t.title }), h('span', { class: 'row-sub', text: t.hint })),
+          (st || isNext) && h('div', { class: 'row-end' }, st, isNext && h('span', { class: 'pill', text: 'Tady pokračuj' })));
+      })))));
+  }
+  function toggleTopic(id) {
+    if (state.readOnly) return;
+    const topics = { ...state.topics };
+    if (topics[id]) delete topics[id]; else topics[id] = { at: Date.now(), stage: 0, due: addDays(todayKey(), 1) };
+    state.topics = topics;
+    renderHero(); renderRoute(); renderReview(); renderChips();
+    save('state/progress', () => ({ topics: state.topics }));
+  }
+  function gradeTopic(id, ok) {
+    const p = state.topics[id];
+    if (!p || state.readOnly) return;
+    const stage = ok ? Math.min((p.stage || 0) + 1, 3) : 0;
+    state.topics = { ...state.topics, [id]: { ...p, stage, due: addDays(todayKey(), GAPS[stage]), last: todayKey() } };
+    save('state/progress', () => ({ topics: state.topics }));
+  }
+
+  function renderReview() {
+    const box = $('review'), R = state.review, due = dueList();
+    if (!R) {
+      if (!due.length) { box.replaceChildren(); return; }
+      box.replaceChildren(h('div', { class: 'card review' }, h('div', { class: 'review-head' },
+        h('div', {}, h('h2', { text: 'Čeká ' + plural(due.length, 'téma', 'témata', 'témat') + ' na zopakování' }), h('p', { class: 'quiet', text: 'Jedna otázka ke každému. Co víš, se vrátí později. Co ne, zítra.' })),
+        !state.readOnly && h('button', { class: 'btn hot', type: 'button', onclick: startReview }, 'Začít opakování'))));
+      return;
+    }
+    if (R.busy) { box.replaceChildren(h('div', { class: 'card review' }, h('p', { class: 'quiet', text: 'Připravuju otázky…' }))); return; }
+    const kids = R.items.map((it, i) => {
+      const a = R.answers[i], t = TOPIC[it.id];
+      const fs = h('fieldset', { class: 'qq' }, h('legend', {}, h('span', { class: 'topic', text: t ? t.title : '' }), it.self ? 'Vysvětli si to nahlas vlastními slovy. Šlo to?' : it.q));
+      if (it.self) {
+        [['Vím', true], ['Nevím', false]].forEach(([label, ok]) => fs.append(h('button', { class: 'opt' + (a == null ? '' : a === ok ? (ok ? ' ok' : ' bad') : ''), type: 'button', disabled: a != null, onclick: () => answerReview(i, ok, ok) }, label)));
+      } else {
+        it.options.forEach((opt, j) => fs.append(h('button', { class: a == null ? 'opt' : j === it.correct ? 'opt ok' : j === a ? 'opt bad' : 'opt', type: 'button', disabled: a != null, onclick: () => answerReview(i, j, j === it.correct) }, opt)));
+        if (a != null) fs.append(h('p', { class: 'why', text: (a === it.correct ? 'Správně. ' : 'Vedle. ') + it.why }));
+      }
+      return fs;
+    });
+    const all = R.items.every((_, i) => R.answers[i] != null);
+    if (all) {
+      const right = R.items.filter((_, i) => R.right[i]).length;
+      kids.push(h('p', { class: 'score', text: right + ' z ' + R.items.length + ' sedí. ' + (right === R.items.length ? 'Tohle drží.' : 'Co nesedělo, se ti vrátí zítra.') }));
+      kids.push(h('div', {}, h('button', { class: 'btn primary', type: 'button', onclick: () => { state.review = null; renderReview(); renderRoute(); renderHero(); } }, 'Hotovo')));
+    }
+    box.replaceChildren(h('div', { class: 'card review' }, h('div', { class: 'review-head' }, h('h2', { text: 'Opakování' })), h('div', { class: 'quiz' }, kids)));
+  }
+  function answerReview(i, answer, ok) {
+    const R = state.review;
+    if (!R || R.answers[i] != null) return;
+    R.answers[i] = answer; R.right[i] = ok;
+    gradeTopic(R.items[i].id, ok);
+    if (R.items.every((_, j) => R.answers[j] != null)) markDay('review');
+    renderReview();
+  }
+  async function startReview() {
+    const due = dueList().slice(0, 5);
+    if (!due.length || (state.review && state.review.busy)) return;
+    const R = state.review = { busy: true, items: [], answers: {}, right: {} };
+    renderReview();
+    const selfItems = due.map(t => ({ id: t.id, self: true }));
+    const sample = await sampleP;
+    if (!sample) { R.items = selfItems; R.busy = false; renderReview(); return; }
+    try {
+      const data = await sample.json('Vytvoř ke každému tématu jednu kontrolní otázku v češtině pro začátečníka, který se učí AI. Otázka ověřuje pochopení na situaci z praxe, ne definici. Každá má 4 možnosti a právě jednu správnou, správnou dávej na různé pozice.\n\nTémata:\n' + due.map(t => '- id "' + t.id + '": ' + t.title + ' (' + t.hint + ')').join('\n') + '\n\nOdpověz pouze JSON polem objektů {"id": id tématu, "q": string, "options": [4 řetězce], "correct": číslo 0 až 3, "why": jedna věta vysvětlení}.', { cache: false });
+      const items = (Array.isArray(data) ? data : []).filter(it => it && TOPIC[it.id] && state.topics[it.id] && typeof it.q === 'string' && Array.isArray(it.options) && it.options.length >= 2 && Number.isInteger(it.correct) && it.correct >= 0 && it.correct < it.options.length)
+        .map(it => ({ id: it.id, q: it.q, options: it.options.map(String), correct: it.correct, why: String(it.why || '') }));
+      const seen = new Set();
+      R.items = items.filter(it => !seen.has(it.id) && seen.add(it.id));
+      if (!R.items.length) R.items = selfItems;
+    } catch (e) { R.items = selfItems; }
+    R.busy = false;
+    if (state.review === R) renderReview();
+  }
+
+  function renderChips() {
+    const picks = TOPICS.filter(t => !isDone(t.id)).slice(0, 3);
+    const extra = ['Rozdíl mezi skillem a subagentem', 'Jak si postavit první automatizaci v n8n'];
+    $('chips').replaceChildren(
+      ...picks.map(t => h('button', { class: 'chip', type: 'button', onclick: () => startTopic(t) }, t.title)),
+      ...extra.map(x => h('button', { class: 'chip', type: 'button', onclick: () => startLesson(x, {}) }, x)));
+    $('tutor-off').hidden = !state.tutorOff;
+  }
+
+  function armDelete(btn, fn) {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.armed) fn();
+      else { btn.dataset.armed = '1'; btn.textContent = 'Opravdu smazat?'; setTimeout(() => { delete btn.dataset.armed; btn.textContent = 'Smazat'; }, 3500); }
+    });
+    return btn;
+  }
+  async function removeDoc(coll, id) {
+    const db = await dbP;
+    if (!db) return;
+    try { await db.collection(coll).doc(id).delete(); toast('Smazáno'); } catch (e) { toast('Smazání se nepovedlo.'); }
+  }
+
+  function renderNotes() {
+    const box = $('notes');
+    if (!state.notes.length) { box.replaceChildren(h('p', { class: 'quiet', text: 'Lekce, které si uložíš, najdeš tady. Můžeš se k nim vrátit a ptát se dál.' })); return; }
+    box.replaceChildren(h('div', { class: 'rows' }, state.notes.map(n => {
+      const d = new Date(n.createdAt || 0);
+      return h('div', { class: 'row has-end', style: 'grid-template-columns:minmax(0,1fr) auto' },
+        h('button', { class: 'row-main', type: 'button', onclick: () => openNote(n) }, h('span', { class: 'row-name', text: n.title || 'Lekce' }), h('span', { class: 'row-sub', text: d.getDate() + '. ' + (d.getMonth() + 1) + '. ' + d.getFullYear() })),
+        !state.readOnly && h('div', { class: 'row-end', style: 'grid-column:auto' }, armDelete(h('button', { class: 'link', type: 'button' }, 'Smazat'), async () => {
+          await removeDoc('notes', n.id);
+          if (state.lesson && state.lesson.noteId === n.id) { state.lesson.noteId = null; state.lesson.savedLen = 0; renderLesson(); }
+        })));
+    })));
+  }
+
+  const ERR = {
+    not_granted: 'Lektor tu nemá povoleno ptát se Clauda. Povol to v oprávněních artifactu a načti stránku znovu.',
+    sampling_disabled: 'Claude není pro tenhle účet dostupný.',
+    not_declared: 'Lektor na téhle stránce není zapnutý.',
+    capability_disabled: 'Lektor v tomhle zobrazení nefunguje. Otevři stránku v Claude.',
+    capability_removed: 'Lektor v tomhle zobrazení nefunguje. Otevři stránku v Claude.',
+    rate_limited: 'Teď je to moc dotazů najednou. Zkus to za chvíli.',
+    session_expired: 'Přihlášení vypršelo. Přihlas se znovu do Claude.',
+    refused: 'Na tohle Claude neodpoví. Zkus zadání přeformulovat.',
+    prompt_too_large: 'Konverzace je moc dlouhá. Začni novou lekci.',
+    empty_completion: 'Odpověď nepřišla. Zkus se zeptat jednodušeji.',
+    invalid_json: 'Tohle se nepodařilo připravit. Zkus to znovu.',
+  };
+  const errText = e => ERR[e && e.code] || 'Spojení vypadlo. Zkus to znovu.';
+
+  function rules(level) {
+    return 'Jsi osobní lektor AI. Učíš česky jednoho člověka a tykáš mu.\n\n'
+      + 'Koho učíš: ' + state.profile + '\n'
+      + 'Úroveň pro tuhle lekci: ' + (level === 'some' ? 'základ má, přeskoč úplné začátky a jdi víc do hloubky.' : 'začíná od nuly, nepředpokládej žádné technické znalosti.') + '\n\n'
+      + 'Pravidla:\n'
+      + '- Piš jednoduše. Každý odborný pojem při prvním použití jednou větou vysvětli.\n'
+      + '- Použij jedno přirovnání z marketingu nebo ze stavby a developmentu.\n'
+      + '- Buď konkrétní k nástrojům, které používá.\n'
+      + '- Nevymýšlej si novinky, verze ani funkce nástrojů. Když si aktuálním stavem nejsi jistý, řekni to.\n'
+      + '- Nepoužívej tabulky. Formát je Markdown s nadpisy ##.\n\n'
+      + 'První odpověď je lekce do 350 slov s touhle osnovou: ## V kostce (dvě věty), ## Jak to funguje, ## Příklad z tvé práce, ## Zkus si to na 10 minut (číslované kroky), ## Jak poznáš, že to umíš (jedna kontrolní otázka).\n'
+      + 'Na doplňující otázky odpovídej krátce a k věci, bez osnovy.';
+  }
+  const level = () => (document.querySelector('input[name="level"]:checked') || {}).value || 'zero';
+
+  let streamRaf = 0;
+  function paintStream() {
+    cancelAnimationFrame(streamRaf);
+    streamRaf = requestAnimationFrame(() => {
+      const el = $('stream'), L = state.lesson;
+      if (el && L) el.innerHTML = L.stream ? md(L.stream) : '<p class="quiet">Přemýšlím…</p>';
+    });
+  }
+
+  function renderLesson() {
+    const box = $('lesson'), L = state.lesson;
+    if (!L) { box.hidden = true; box.replaceChildren(); return; }
+    box.hidden = false;
+    const hasAnswer = L.turns.some(t => t.role === 'assistant');
+    const kids = [h('div', { class: 'lesson-head' }, h('h2', { text: L.title }), L.busy && h('button', { class: 'btn ghost sm', type: 'button', onclick: () => L.ctl && L.ctl.abort() }, 'Zastavit'))];
+    L.turns.slice(2).forEach(t => {
+      if (t.role === 'assistant') { const d = h('div', { class: 'md' }); d.innerHTML = md(t.content); kids.push(d); }
+      else kids.push(h('p', { class: 'q', text: t.content }));
+    });
+    if (L.busy) kids.push(h('div', { class: 'md', id: 'stream' }));
+    if (L.error) kids.push(h('p', { class: 'err', text: L.error }));
+    if (!L.busy && L.error && L.turns[L.turns.length - 1].role === 'user') kids.push(h('div', { class: 'actions' }, h('button', { class: 'btn primary', type: 'button', onclick: runLesson }, 'Zkusit znovu')));
+    if (!L.busy && hasAnswer) {
+      const saved = L.savedLen === L.turns.length, done = L.topicId && isDone(L.topicId);
+      kids.push(h('div', { class: 'actions' },
+        h('button', { class: 'btn ghost sm', type: 'button', disabled: !!(L.quiz && L.quiz.busy), onclick: runQuiz }, L.quiz ? 'Nové otázky' : 'Vyzkoušej mě'),
+        !state.readOnly && h('button', { class: 'btn ghost sm', type: 'button', disabled: saved, onclick: saveNote }, saved ? 'Uloženo v zápisníku' : 'Uložit do zápisníku'),
+        !state.readOnly && L.topicId && h('button', { class: 'btn sm ' + (done ? 'ghost' : 'hot'), type: 'button', onclick: () => { toggleTopic(L.topicId); renderLesson(); } }, done ? 'Hotovo. Vrátit zpět' : 'Rozumím, mám hotovo')));
+      kids.push(h('div', { class: 'quiz', id: 'quiz' }));
+      const follow = h('form', { class: 'follow' },
+        h('input', { class: 'field', id: 'follow-q', type: 'text', placeholder: 'Zeptej se dál', 'aria-label': 'Doplňující otázka', autocomplete: 'off' }),
+        h('button', { class: 'btn primary', type: 'submit' }, 'Zeptat se'));
+      follow.addEventListener('submit', ev => {
+        ev.preventDefault();
+        const v = $('follow-q').value.trim();
+        if (!v) return;
+        L.turns.push({ role: 'user', content: v });
+        L.quiz = null;
+        runLesson();
+      });
+      kids.push(follow);
+      box.replaceChildren(...kids);
+      renderQuiz();
+    } else box.replaceChildren(...kids);
+    if (L.busy) paintStream();
+  }
+
+  function renderQuiz() {
+    const box = $('quiz'), L = state.lesson;
+    if (!box || !L) return;
+    const Q = L.quiz;
+    if (!Q) { box.replaceChildren(); return; }
+    if (Q.busy) { box.replaceChildren(h('p', { class: 'quiet', text: 'Připravuju otázky…' })); return; }
+    if (Q.error) { box.replaceChildren(h('p', { class: 'err', text: Q.error })); return; }
+    const kids = Q.items.map((it, i) => {
+      const picked = Q.answers[i];
+      const fs = h('fieldset', { class: 'qq' }, h('legend', { text: (i + 1) + '. ' + it.q }));
+      it.options.forEach((opt, j) => fs.append(h('button', { class: picked == null ? 'opt' : j === it.correct ? 'opt ok' : j === picked ? 'opt bad' : 'opt', type: 'button', disabled: picked != null, onclick: () => { Q.answers[i] = j; renderQuiz(); } }, opt)));
+      if (picked != null) fs.append(h('p', { class: 'why', text: (picked === it.correct ? 'Správně. ' : 'Vedle. ') + it.why }));
+      return fs;
+    });
+    if (Q.items.every((_, i) => Q.answers[i] != null)) {
+      const right = Q.items.filter((it, i) => Q.answers[i] === it.correct).length;
+      kids.push(h('p', { class: 'score', text: right + ' z ' + Q.items.length + ' správně. ' + (right === Q.items.length ? 'Tohle umíš.' : right >= Q.items.length - 1 ? 'Skoro. Projdi si, co ti uteklo.' : 'Zeptej se lektora na to, co nesedělo, a zkus to znovu.') }));
+    }
+    box.replaceChildren(...kids);
+  }
+
+  async function runLesson() {
+    const L = state.lesson;
+    if (!L || L.busy) return;
+    const sample = await sampleP;
+    if (state.lesson !== L) return;
+    if (!sample) { state.tutorOff = true; L.error = 'Lektor odpovídá, jen když je stránka otevřená v Claude.'; renderChips(); renderLesson(); return; }
+    L.busy = true; L.error = null; L.stream = '';
+    L.ctl = new AbortController();
+    renderLesson();
+    try {
+      const { text, truncated } = await sample(L.turns, { cache: false, signal: L.ctl.signal, onText: ({ text }) => { if (state.lesson === L) { L.stream = text; paintStream(); } } });
+      L.turns.push({ role: 'assistant', content: text });
+      if (truncated) L.error = 'Odpověď se nevešla celá. Zeptej se na pokračování.';
+      markDay('lesson');
+    } catch (e) {
+      if (e && e.text && e.code !== 'refused') L.turns.push({ role: 'assistant', content: e.text });
+      if (!e || e.code !== 'cancelled') L.error = errText(e);
+      if (e && ['not_granted', 'sampling_disabled', 'not_declared'].includes(e.code)) { state.tutorOff = true; renderChips(); }
+    } finally {
+      L.busy = false; L.stream = '';
+      if (state.lesson === L) renderLesson();
+    }
+  }
+
+  async function runQuiz() {
+    const L = state.lesson;
+    if (!L || (L.quiz && L.quiz.busy)) return;
+    const sample = await sampleP;
+    if (!sample || state.lesson !== L) return;
+    const Q = L.quiz = { busy: true, items: [], answers: {} };
+    renderLesson();
+    const body = L.turns.filter(t => t.role === 'assistant').map(t => t.content).join('\n\n').slice(0, 8000);
+    try {
+      const data = await sample.json('Vytvoř 3 kontrolní otázky v češtině k lekci níže. Ověřují pochopení, ne memorování, a jsou zasazené do praxe. Každá má 4 možnosti a právě jednu správnou. Správnou možnost dávej na různé pozice.\n\n'
+        + 'Odpověz pouze JSON polem objektů {"q": string, "options": [4 řetězce], "correct": číslo 0 až 3, "why": jedna věta vysvětlení}.\n\nLekce:\n' + body, { cache: false });
+      const items = (Array.isArray(data) ? data : []).filter(it => it && typeof it.q === 'string' && Array.isArray(it.options) && it.options.length >= 2 && Number.isInteger(it.correct) && it.correct >= 0 && it.correct < it.options.length)
+        .map(it => ({ q: it.q, options: it.options.map(String), correct: it.correct, why: String(it.why || '') }));
+      if (!items.length) throw { code: 'invalid_json' };
+      Q.items = items;
+    } catch (e) { Q.error = errText(e); }
+    finally { Q.busy = false; if (state.lesson === L) renderLesson(); }
+  }
+
+  function startLesson(title, opts) {
+    const o = opts || {};
+    if (state.lesson && state.lesson.ctl) state.lesson.ctl.abort();
+    state.lesson = { title, topicId: o.topicId || null, noteId: null, savedLen: 0, quiz: null, busy: false, error: null, stream: '',
+      turns: [{ role: 'user', content: rules(level()) }, { role: 'user', content: o.ask || ('Chci se naučit: ' + title) }] };
+    if (location.hash !== '#ucit-se') location.hash = 'ucit-se';
+    renderLesson();
+    runLesson();
+    requestAnimationFrame(() => $('lesson').scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' }));
+  }
+  const startTopic = t => startLesson(t.title, { topicId: t.id, ask: 'Chci se naučit: ' + t.title + ' (' + t.hint + ').' });
+
+  function openNote(n) {
+    if (state.lesson && state.lesson.ctl) state.lesson.ctl.abort();
+    const turns = (Array.isArray(n.turns) ? n.turns : []).filter(t => t && (t.role === 'user' || t.role === 'assistant') && typeof t.content === 'string');
+    state.lesson = { title: n.title || 'Lekce', topicId: n.topicId || null, noteId: n.id, quiz: null, busy: false, error: null, stream: '', turns: [{ role: 'user', content: rules(level()) }, ...turns] };
+    state.lesson.savedLen = state.lesson.turns.length;
+    renderLesson();
+    $('lesson').scrollIntoView({ block: 'start' });
+  }
+
+  async function saveNote() {
+    const L = state.lesson;
+    if (!L) return;
+    const db = await dbP;
+    if (!db) { toast('Uložit jde jen v Claude.'); return; }
+    const id = L.noteId || 'n' + Date.now().toString(36);
+    const existing = state.notes.find(n => n.id === id);
+    try {
+      await db.collection('notes').doc(id).set({ title: L.title, topicId: L.topicId || null, turns: L.turns.slice(1), createdAt: existing ? existing.createdAt : Date.now(), updatedAt: Date.now() });
+      L.noteId = id; L.savedLen = L.turns.length;
+      toast('Uloženo do zápisníku');
+      if (state.lesson === L) renderLesson();
+    } catch (e) { toast('Uložení se nepovedlo.'); }
+  }
+
+  const THEMEC = { 'Kurzy a základy': '#FFB36B', 'Claude Code a agenti': '#FF6A2A', 'Weby a design': '#3B5BFF', 'Vizuál a video': '#FF2E7E', 'Automatizace': '#8B5CFF', 'Byznys s AI': '#19C3A6' };
+  const safeUrl = u => typeof u === 'string' && u.startsWith('https://') ? u : null;
+  async function toggleLib(it) {
+    const db = await dbP;
+    if (!db || state.readOnly) return;
+    const { id, ...rest } = it;
+    db.collection('library').doc(id).set({ ...rest, done: !it.done, doneAt: it.done ? null : Date.now() }).catch(() => toast('Uložení se nepovedlo.'));
+  }
+  function renderLib() {
+    const all = [...state.library].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const box = $('lib');
+    const seen = all.filter(i => i.done).length;
+    $('lib-sub').textContent = all.length ? 'Máš tu ' + plural(all.length, 'odkaz', 'odkazy', 'odkazů') + ', hotovo ' + seen + '. Nahoře je pořadí, které dává smysl pro tvoji trasu. Zbytek ber jako zásobu, ne jako povinnost.' : 'Videa, kurzy a články, ke kterým se chceš vrátit.';
+    if (!all.length) { box.replaceChildren(h('p', { class: 'quiet', text: state.libReady ? 'Zatím tu nic není. Přidej první odkaz níže.' : 'Načítám…' }), addLibForm()); return; }
+    const themes = ['Vše', ...new Set(all.map(i => i.theme).filter(Boolean))];
+    const picks = all.filter(i => i.pick).sort((a, b) => a.pick - b.pick);
+    const list = state.libTheme === 'Vše' ? all.filter(i => !i.pick) : all.filter(i => i.theme === state.libTheme);
+    const ring = it => h('button', { class: 'ring' + (it.done ? ' on' : ''), type: 'button', disabled: state.readOnly, 'aria-pressed': String(!!it.done), 'aria-label': (it.done ? 'Vrátit mezi nezhlédnuté: ' : 'Označit jako hotové: ') + it.title, onclick: () => toggleLib(it) });
+    const kids = [];
+    if (state.libTheme === 'Vše' && picks.length) {
+      kids.push(h('div', { class: 'sec-head', style: 'margin-top:0' }, h('h2', { text: 'Začni tady' })));
+      kids.push(h('div', { class: 'picks' }, picks.map(it => h('article', { class: 'card pick' + (it.done ? ' is-done' : ''), style: '--g:' + (THEMEC[it.theme] || '#FF2E7E') },
+        h('div', { class: 'item-meta' }, h('span', { class: 'pill', text: it.theme || it.kind || '' })),
+        h('h3', {}, safeUrl(it.url) ? h('a', { href: it.url, target: '_blank', rel: 'noopener', text: it.title }) : it.title),
+        it.why && h('p', { class: 'quiet', text: it.why }),
+        h('div', { class: 'pick-foot' }, h('span', { text: it.author || '' }), ring(it))))));
+      kids.push(h('div', { class: 'sec-head' }, h('h2', { text: 'Všechno ostatní' })));
+    }
+    kids.push(h('div', { class: 'chips', style: 'margin:0 0 10px' }, themes.map(t => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.libTheme === t), onclick: () => { state.libTheme = t; renderLib(); } }, t))));
+    kids.push(h('div', { class: 'rows' }, list.map(it => h('div', { class: 'row', style: '--g:' + (THEMEC[it.theme] || '#FF2E7E') + (it.done ? ';opacity:.55' : '') },
+      ring(it),
+      safeUrl(it.url) ? h('a', { class: 'row-main', href: it.url, target: '_blank', rel: 'noopener' }, h('span', { class: 'row-name', text: it.title }), h('span', { class: 'row-sub', text: [it.author, it.theme].filter(Boolean).join(', ') }))
+        : h('div', { class: 'row-main' }, h('span', { class: 'row-name', text: it.title }), h('span', { class: 'row-sub', text: [it.author, it.theme].filter(Boolean).join(', ') })),
+      !state.readOnly && it.own ? armDelete(h('button', { class: 'link', type: 'button' }, 'Smazat'), () => removeDoc('library', it.id)) : h('span', {})))));
+    kids.push(addLibForm());
+    box.replaceChildren(...kids);
+  }
+  function addLibForm() {
+    if (state.readOnly) return null;
+    const f = h('form', { class: 'add two' },
+      h('input', { class: 'field', id: 'lib-url', type: 'url', placeholder: 'Odkaz (https://…)', 'aria-label': 'Odkaz', required: true }),
+      h('input', { class: 'field', id: 'lib-title', type: 'text', placeholder: 'Název', 'aria-label': 'Název', required: true }),
+      h('button', { class: 'btn primary', type: 'submit' }, 'Přidat odkaz'));
+    f.addEventListener('submit', async ev => {
+      ev.preventDefault();
+      const url = $('lib-url').value.trim(), title = $('lib-title').value.trim();
+      if (!safeUrl(url)) { toast('Odkaz musí začínat https://'); return; }
+      const db = await dbP;
+      if (!db || !title) return;
+      try { await db.collection('library').add({ url, title: title.slice(0, 200), theme: 'Moje', kind: 'odkaz', own: true, done: false, order: Date.now() }); toast('Přidáno'); }
+      catch (e) { toast('Přidání se nepovedlo.'); }
+    });
+    return f;
+  }
+
+  function renderSys() {
+    const box = $('sys'), all = [...state.systems].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    const running = all.filter(s => s.status !== 'napad'), ideas = all.filter(s => s.status === 'napad');
+    const mins = running.reduce((n, s) => n + (Number(s.minutes) || 0), 0);
+    const hrs = (mins / 60).toFixed(1).split('.');
+    const row = s => h('div', { class: 'row has-end', style: 'grid-template-columns:minmax(0,1fr) auto' },
+      h('div', { class: 'row-main' }, h('span', { class: 'row-name', text: s.name }), h('span', { class: 'row-sub', text: [s.kind, s.note].filter(Boolean).join(', ') })),
+      h('div', { class: 'row-end', style: 'grid-column:auto' },
+        s.status === 'napad'
+          ? (!state.readOnly && h('button', { class: 'btn ghost sm', type: 'button', onclick: () => patchSys(s, { status: 'bezi' }) }, 'Už běží'))
+          : h('label', { class: 'quiet', style: 'display:flex;align-items:center;gap:8px;font-size:14px' }, (() => { const i = h('input', { class: 'field sys-min', type: 'number', min: '0', step: '5', inputmode: 'numeric', value: String(Number(s.minutes) || 0), disabled: state.readOnly, 'aria-label': 'Minut týdně: ' + s.name }); i.addEventListener('change', () => patchSys(s, { minutes: Math.max(0, Math.round(Number(i.value) || 0)) })); return i; })(), 'min týdně'),
+        !state.readOnly && armDelete(h('button', { class: 'link', type: 'button' }, 'Smazat'), () => removeDoc('systems', s.id))));
+    const kids = [h('div', { class: 'sum' },
+      h('div', { class: 'digits' }, ...hrs[0].padStart(2, '0').split('').map(c => h('b', { text: c })), h('s', { text: ',' }), h('b', { text: hrs[1] })),
+      h('p', {}, h('strong', { text: 'hodin týdně ti šetří AI' }), running.length ? plural(running.length, 'systém běží', 'systémy běží', 'systémů běží') + '. Doplň minuty u těch, kde je zatím nula.' : 'Zatím tu žádný systém není.'))];
+    if (running.length) kids.push(h('p', { class: 'group-h', text: 'Běží' }), h('div', { class: 'rows' }, running.map(row)));
+    if (ideas.length) kids.push(h('p', { class: 'group-h', text: 'Nápady' }), h('div', { class: 'rows' }, ideas.map(row)));
+    if (!state.readOnly) {
+      const f = h('form', { class: 'add sys' },
+        h('input', { class: 'field', id: 'sys-name', type: 'text', placeholder: 'Co to je', 'aria-label': 'Název systému', required: true }),
+        h('select', { class: 'field', id: 'sys-kind', 'aria-label': 'Druh' }, KINDS.map(k => h('option', { value: k, text: k }))),
+        h('select', { class: 'field', id: 'sys-status', 'aria-label': 'Stav' }, h('option', { value: 'bezi', text: 'Běží' }), h('option', { value: 'napad', text: 'Nápad' })),
+        h('button', { class: 'btn primary', type: 'submit' }, 'Přidat'),
+        h('input', { class: 'field wide', id: 'sys-note', type: 'text', placeholder: 'Co dělá, jednou větou', 'aria-label': 'Poznámka' }));
+      f.addEventListener('submit', async ev => {
+        ev.preventDefault();
+        const name = $('sys-name').value.trim();
+        const db = await dbP;
+        if (!db || !name) return;
+        try { await db.collection('systems').add({ name: name.slice(0, 120), kind: $('sys-kind').value, status: $('sys-status').value, note: $('sys-note').value.trim().slice(0, 240), minutes: 0, createdAt: Date.now() }); toast('Přidáno'); }
+        catch (e) { toast('Přidání se nepovedlo.'); }
+      });
+      kids.push(f);
+    }
+    box.replaceChildren(...kids);
+  }
+  async function patchSys(s, patch) {
+    const db = await dbP;
+    if (!db || state.readOnly) return;
+    const { id, ...rest } = s;
+    db.collection('systems').doc(id).set({ ...rest, ...patch, updatedAt: Date.now() }).catch(() => toast('Uložení se nepovedlo.'));
+  }
+
+  let stopAsked = false;
+  async function toggleListen() {
+    const t = await ttsP, b = currentBrief();
+    if (!t || !b) return;
+    if (state.speaking) { stopAsked = true; t.stop().catch(() => {}); return; }
+    stopAsked = false;
+    const lines = [{ text: String(b.headline || 'Dnešní brief').slice(0, 1900) }, ...(b.items || []).map(it => ({ text: [it.title, it.summary, it.why && 'Proč se ti to hodí: ' + it.why, it.try && 'Zkus si: ' + it.try].filter(Boolean).join('. ').slice(0, 1900) }))];
+    try { await t.speak(lines, { language: 'cs' }); if (!stopAsked) markDay('brief'); renderBrief(); }
+    catch (e) {
+      if (e && e.code === 'not_granted') { state.canSpeak = false; renderBrief(); }
+      else if (!stopAsked && !(e && /stop/.test(String(e.reason || e.code || '')))) toast(e && e.code === 'rate_limited' ? 'Čtení je teď vytížené. Zkus to za chvíli.' : 'Čtení se nepovedlo.');
+    }
+  }
+
+  function drawIcon() {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const x = c.getContext('2d');
+    x.fillStyle = '#15171C'; x.beginPath(); x.roundRect(0, 0, 256, 256, 56); x.fill();
+    x.lineCap = 'round'; x.lineWidth = 16;
+    const a0 = Math.PI * (5 / 6), a1 = Math.PI * (13 / 6);
+    x.strokeStyle = '#2A2E36'; x.beginPath(); x.arc(128, 136, 84, a0, a1); x.stroke();
+    x.strokeStyle = '#FFC23D'; x.beginPath(); x.arc(128, 136, 84, a0, a0 + (a1 - a0) * .7); x.stroke();
+    x.strokeStyle = '#FF6B45'; x.lineWidth = 12; x.beginPath(); x.moveTo(128, 136); x.lineTo(172, 82); x.stroke();
+    x.fillStyle = '#F2F0EA'; x.beginPath(); x.arc(128, 136, 12, 0, Math.PI * 2); x.fill();
+    return c.toDataURL('image/png');
+  }
+
+  let firstRoute = true;
+  function route() {
+    const v = location.hash.slice(1);
+    state.view = VIEWS.includes(v) ? v : 'dnes';
+    for (const name of VIEWS) $('view-' + name).hidden = name !== state.view;
+    document.querySelectorAll('.nav a').forEach(a => { if (a.dataset.tab === state.view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    if (!firstRoute) {
+      window.scrollTo(0, 0);
+      play($('view-' + state.view).querySelector('.title'));
+      animateIn($('view-' + state.view));
+    }
+    firstRoute = false;
+  }
+  const renderAll = () => { renderHero(); renderBrief(); renderChallenge(); renderRoute(); renderReview(); renderChips(); renderNotes(); renderLib(); renderSys(); renderLesson(); };
+
+  $('older').addEventListener('click', () => { if (state.briefIdx < state.briefs.length - 1) { state.briefIdx++; state.newsOpen = 0; renderBrief(); } });
+  $('newer').addEventListener('click', () => { if (state.briefIdx > 0) { state.briefIdx--; state.newsOpen = 0; renderBrief(); } });
+  $('listen').addEventListener('click', toggleListen);
+  $('ask').addEventListener('submit', ev => { ev.preventDefault(); const v = $('ask-q').value.trim(); if (v) { $('ask-q').value = ''; startLesson(v, {}); } });
+  $('ask-q').addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); $('ask').requestSubmit(); } });
+  document.querySelectorAll('input[name="level"]').forEach(r => r.addEventListener('change', () => { try { localStorage.setItem('rozjezd-level', r.value); } catch (e) {} }));
+  try { if (localStorage.getItem('rozjezd-level') === 'some') $('lvl-some').checked = true; } catch (e) {}
+  window.addEventListener('hashchange', route);
+  $('lib').addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') return;
+    for (const c of $('lib').querySelectorAll('.pick')) { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); c.style.setProperty('--o', '.55'); }
+  });
+  $('lib').addEventListener('pointerleave', () => { for (const c of $('lib').querySelectorAll('.pick')) { c.style.removeProperty('--mx'); c.style.removeProperty('--my'); c.style.removeProperty('--o'); } });
+
+  route();
+  renderAll();
+  G.booted = true;
+  drawGauge(0);
+  tween(REV);
+  requestAnimationFrame(tick);
+  $('dial').addEventListener('click', () => tween(REV.slice(2)));
+  document.querySelectorAll('.title').forEach(t => splitWords(t, 0));
+  play($('view-' + state.view).querySelector('.title'));
+  animateIn($('view-' + state.view));
+
+  userP.then(async user => {
+    if (!user) return;
+    const owner = await user.isOwner().catch(() => null);
+    if (owner === false) { state.readOnly = true; renderAll(); }
+  });
+  sampleP.then(s => { if (!s) { state.tutorOff = true; renderChips(); renderChallenge(); } });
+  ttsP.then(t => {
+    if (!t) return;
+    state.canSpeak = true;
+    t.onState(({ state: s }) => { state.speaking = s !== 'idle'; renderBrief(); });
+    renderBrief();
+  });
+  dictP.then(d => {
+    if (!d) return;
+    const mic = $('mic'), ta = $('ask-q');
+    mic.hidden = false;
+    d.onFinal(({ text }) => { ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + text; });
+    d.onState(({ state: s }) => { mic.setAttribute('aria-pressed', String(s !== 'idle')); mic.textContent = s === 'idle' ? 'Diktovat' : 'Poslouchám, klikni pro konec'; });
+    mic.addEventListener('click', () => {
+      if (d.active()) d.stop().catch(() => {});
+      else d.start({ language: 'cs' }).catch(e => { if (e && e.code === 'not_granted') mic.hidden = true; else if (!e || e.code !== 'dismissed') toast('Diktování se nepovedlo spustit.'); });
+    });
+  });
+  deskP.then(async desk => {
+    if (!desk) return;
+    if (desk.app && desk.app.dock) { try { desk.app.dock.setIcon(drawIcon()).catch(() => {}); } catch (e) {} }
+    const st = desk.install ? await desk.install.state().catch(() => null) : null;
+    if (st === 'available') { const b = $('install'); b.hidden = false; b.addEventListener('click', () => desk.install.request().catch(() => toast('Instalace se nepovedla.'))); }
+  });
+
+  dbP.then(db => {
+    if (!db) { state.briefsLate = true; state.libReady = true; renderAll(); return; }
+    const late = setTimeout(() => { if (!state.briefsReady) { state.briefsLate = true; renderBrief(); } }, 10000);
+    const docs = snap => snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    db.collection('briefs').orderBy('date', 'desc').limit(14).onSnapshot(snap => {
+      const cur = currentBrief();
+      state.briefs = docs(snap);
+      const keep = cur ? state.briefs.findIndex(b => b.id === cur.id) : -1;
+      state.briefIdx = keep > 0 ? keep : 0;
+      if (!snap.metadata.fromCache || state.briefs.length) { state.briefsReady = true; state.briefsLate = false; clearTimeout(late); }
+      renderBrief(); renderHero();
+      if (!state.inB && state.briefs.length) { state.inB = true; animateIn($('news')); }
+    }, () => { clearTimeout(late); state.briefsLate = true; renderBrief(); });
+    db.doc('state/progress').onSnapshot(snap => {
+      if (saving('state/progress')) return;
+      const d = snap.exists ? snap.data() : null, topics = {};
+      if (d && d.topics && typeof d.topics === 'object') for (const [id, p] of Object.entries(d.topics)) { if (TOPIC[id] && p && typeof p === 'object') topics[id] = { at: p.at || 0, stage: Number(p.stage) || 0, due: typeof p.due === 'string' ? p.due : todayKey(), last: p.last || null }; }
+      else if (d && d.done && typeof d.done === 'object') for (const id of Object.keys(d.done)) if (TOPIC[id]) topics[id] = { at: 0, stage: 0, due: todayKey() };
+      state.topics = topics;
+      renderHero(); renderRoute(); renderChips(); if (!state.review) renderReview();
+      if (state.lesson && !state.lesson.busy) renderLesson();
+    }, () => {});
+    db.doc('state/days').onSnapshot(snap => {
+      if (saving('state/days')) return;
+      const d = snap.exists ? snap.data() : null;
+      state.days = d && d.days && typeof d.days === 'object' ? { ...d.days } : {};
+      renderHero(); renderBrief();
+    }, () => {});
+    db.collection('notes').orderBy('createdAt', 'desc').limit(60).onSnapshot(snap => { state.notes = docs(snap); renderNotes(); }, () => {});
+    db.collection('library').limit(400).onSnapshot(snap => { const firstL = !state.libReady; state.library = docs(snap); state.libReady = true; renderLib(); if (firstL) animateIn($('lib')); }, () => {});
+    db.collection('systems').limit(200).onSnapshot(snap => { const firstS = !state.inS; state.inS = true; state.systems = docs(snap); renderSys(); if (firstS) animateIn($('sys')); }, () => {});
+    db.collection('challenges').limit(60).onSnapshot(snap => { state.challenges = docs(snap); renderChallenge(); }, () => {});
+    db.doc('state/profile').get().then(snap => {
+      const d = snap.exists ? snap.data() : null;
+      if (d && typeof d.about === 'string' && d.about.trim()) state.profile = d.about.trim().slice(0, 2000);
+    }).catch(() => {});
+  });
+})();
+</script>
