@@ -256,13 +256,23 @@ export function Today() {
         <h2>Výzva týdne</h2>
       </div>
       <ChallengeCard s={s} />
-      {s.canInstall && (
-        <div className="foot">
+      <div className="foot">
+        {s.canInstall ? (
           <button type="button" className="btn ghost" onClick={installApp}>
             Nainstalovat jako appku
           </button>
-        </div>
-      )}
+        ) : (
+          <p className="quiet" style={{ fontSize: 14.5, textAlign: "center", maxWidth: "52ch" }}>
+            {s.installState === "installed"
+              ? "Appka je na tomhle počítači nainstalovaná."
+              : s.installState === "off"
+                ? "Instalace jako appka je pro tenhle účet nebo organizaci vypnutá."
+                : s.installState === "unavailable"
+                  ? "Instalaci jako appku tohle zobrazení nenabízí. Jde to jen z desktopové aplikace Claude."
+                  : ""}
+          </p>
+        )}
+      </div>
     </section>
   );
 }

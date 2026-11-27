@@ -37,6 +37,7 @@ export interface State {
   canSpeak: boolean;
   speaking: boolean;
   canInstall: boolean;
+  installState: string;
   chBusy: boolean;
   lesson: Lesson | null;
   review: Review | null;
@@ -74,6 +75,7 @@ let state: State = {
   canSpeak: false,
   speaking: false,
   canInstall: false,
+  installState: "",
   chBusy: false,
   lesson: null,
   review: null,
@@ -603,11 +605,11 @@ export function initStore() {
     t.onState(({ state: s }) => set({ speaking: s !== "idle" }));
   });
   deskP.then(async (desk) => {
-    if (!desk) return;
+    if (!desk) return set({ installState: "off" });
     const icon = drawIcon();
     if (icon) desk.app?.dock?.setIcon(icon).catch(() => {});
     const st = desk.install ? await desk.install.state().catch(() => null) : null;
-    if (st === "available") set({ canInstall: true });
+    set({ canInstall: st === "available", installState: st ?? "unavailable" });
   });
 
   dbP.then((db) => {
