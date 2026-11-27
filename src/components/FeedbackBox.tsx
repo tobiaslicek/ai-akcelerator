@@ -2,7 +2,38 @@ import { useEffect, useState } from "react";
 import { saveFeedback, useStore } from "../lib/store";
 import type { Feedback } from "../types";
 
-export function FeedbackBox({ id, kind, title, tag }: { id: string; kind: string; title: string; tag?: string }) {
+interface Props {
+  id: string;
+  kind: string;
+  title: string;
+  tag?: string;
+  label?: string;
+  up?: string;
+  down?: string;
+  placeholder?: string;
+}
+
+export const fbId = (prefix: string, text: string) =>
+  prefix +
+  "-" +
+  text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60);
+
+export function FeedbackBox({
+  id,
+  kind,
+  title,
+  tag,
+  label = "Řekni Claudovi, jestli tohle chceš",
+  up = "Tohle se mi hodí",
+  down = "Tohle není pro mě",
+  placeholder = "Připomínka pro Clauda. Třeba: přesně tohle potřebuju, nebo: tohle je mimo, protože…",
+}: Props) {
   const s = useStore();
   const saved = s.feedback[id];
   const [note, setNote] = useState(saved?.note ?? "");
@@ -22,12 +53,12 @@ export function FeedbackBox({ id, kind, title, tag }: { id: string; kind: string
   return (
     <div className="fb">
       <div className="fb-row">
-        <span className="fb-label">Řekni Claudovi, jestli tohle chceš</span>
+        <span className="fb-label">{label}</span>
         <button type="button" className="chip" aria-pressed={saved?.rating === "up"} onClick={() => rate("up")}>
-          Tohle se mi hodí
+          {up}
         </button>
         <button type="button" className="chip" aria-pressed={saved?.rating === "down"} onClick={() => rate("down")}>
-          Tohle není pro mě
+          {down}
         </button>
       </div>
       <div className="fb-row">
@@ -36,7 +67,7 @@ export function FeedbackBox({ id, kind, title, tag }: { id: string; kind: string
           rows={2}
           id={"fb-" + id}
           aria-label="Připomínka pro Clauda"
-          placeholder="Připomínka pro Clauda. Třeba: přesně tohle potřebuju, nebo: tohle je mimo, protože…"
+          placeholder={placeholder}
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />

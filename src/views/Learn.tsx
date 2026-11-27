@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { FeedbackBox, fbId } from "../components/FeedbackBox";
 import { Options, Question } from "../components/Quiz";
 import { ArmDelete, PageTitle } from "../components/ui";
 import { dictP } from "../lib/caps";
@@ -94,6 +95,15 @@ function LessonCard({ s }: { s: State }) {
               Zeptat se
             </button>
           </form>
+          <FeedbackBox
+            id={L.topicId ? "lesson-" + L.topicId : fbId("lesson", L.title)}
+            kind="lesson"
+            title={L.title}
+            label="Jak ti lekce sedla?"
+            up="Takhle mi to sedí"
+            down="Takhle ne"
+            placeholder="Připomínka pro lektora. Třeba: víc příkladů z realit, nebo: moc dlouhé, zkrať to"
+          />
         </>
       )}
     </article>

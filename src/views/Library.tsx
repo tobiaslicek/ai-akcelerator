@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent } from "react";
+import { FeedbackBox } from "../components/FeedbackBox";
 import { ArmDelete, PageTitle, Ring, usePointerLight } from "../components/ui";
 import { plural } from "../lib/dates";
 import { useEnter } from "../lib/motion";
@@ -24,11 +25,32 @@ export function Library() {
   const [theme, setTheme] = useState("Vše");
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
+  const [fbOpen, setFbOpen] = useState<string | null>(null);
   const all = [...s.library].sort((a, b) => (a.order || 0) - (b.order || 0));
   const themes = ["Vše", ...new Set(all.map((i) => i.theme).filter((t): t is string => !!t))];
   const picks = all.filter((i) => i.pick).sort((a, b) => (a.pick || 0) - (b.pick || 0));
   const list = theme === "Vše" ? all.filter((i) => !i.pick) : all.filter((i) => i.theme === theme);
   const ring = (it: LibItem) => <Ring on={!!it.done} disabled={s.readOnly} label={(it.done ? "Vrátit mezi nezhlédnuté: " : "Označit jako hotové: ") + it.title} onClick={() => toggleLib(it)} />;
+  const fbKey = (it: LibItem) => "library-" + it.id;
+  const noteBtn = (it: LibItem) => {
+    const has = !!(s.feedback[fbKey(it)]?.rating || s.feedback[fbKey(it)]?.note);
+    return (
+      <button type="button" className="btn ghost sm fb-toggle" aria-expanded={fbOpen === it.id} onClick={() => setFbOpen(fbOpen === it.id ? null : it.id)}>
+        {has ? "Připomínka uložená" : "Připomínka"}
+      </button>
+    );
+  };
+  const box = (it: LibItem) =>
+    fbOpen === it.id && (
+      <FeedbackBox
+        id={fbKey(it)}
+        kind="library"
+        title={it.title}
+        tag={it.theme}
+        label="Chceš víc takových odkazů?"
+        placeholder="Připomínka k odkazu. Třeba: tenhle autor mi sedí, nebo: moc povrchní"
+      />
+    );
   const submit = async (ev: FormEvent) => {
     ev.preventDefault();
     await addLib(url.trim(), title.trim());
@@ -61,8 +83,12 @@ export function Library() {
                 {it.why && <p className="quiet">{it.why}</p>}
                 <div className="pick-foot">
                   <span>{it.author}</span>
-                  {ring(it)}
+                  <span className="row-end">
+                    {!s.readOnly && noteBtn(it)}
+                    {ring(it)}
+                  </span>
                 </div>
+                {box(it)}
               </article>
             ))}
           </div>
@@ -98,7 +124,11 @@ export function Library() {
                   ) : (
                     <div className="row-main">{body}</div>
                   )}
-                  {!s.readOnly && it.own ? <ArmDelete onConfirm={() => removeDoc("library", it.id)} /> : <span />}
+                  <span className="row-end">
+                    {!s.readOnly && noteBtn(it)}
+                    {!s.readOnly && it.own && <ArmDelete onConfirm={() => removeDoc("library", it.id)} />}
+                  </span>
+                  {box(it)}
                 </div>
               );
             })}

@@ -203,9 +203,10 @@ const feedbackDigest = () => {
     .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
     .slice(0, 12);
   if (!all.length) return "";
+  const kinds: Record<string, string> = { news: "novinka", lesson: "lekce", challenge: "výzva týdne", library: "odkaz v knihovně" };
   const line = (f: Feedback) =>
-    "- " + (f.rating === "up" ? "hodí se" : f.rating === "down" ? "nehodí se" : "bez hodnocení") + ": " + f.title.slice(0, 90) + (f.note ? " (jeho slovy: " + f.note.slice(0, 200) + ")" : "");
-  return "\nCo sám řekl k novinkám, ber to jako vodítko, co ho zajímá:\n" + all.map(line).join("\n") + "\n";
+    "- " + (kinds[f.kind] ?? f.kind) + ", " + (f.rating === "up" ? "hodí se" : f.rating === "down" ? "nehodí se" : "bez hodnocení") + ": " + f.title.slice(0, 90) + (f.note ? " (jeho slovy: " + f.note.slice(0, 200) + ")" : "");
+  return "\nCo sám řekl k novinkám, lekcím, výzvám a odkazům, ber to jako vodítko, co ho zajímá a jak mu vysvětlovat:\n" + all.map(line).join("\n") + "\n";
 };
 
 export async function saveFeedback(fb: Feedback) {

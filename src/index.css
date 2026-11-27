@@ -138,6 +138,10 @@ button{cursor:pointer}
 .fb-label{color:var(--ink-3);font-size:14.5px;font-weight:500;margin-right:4px}
 .fb textarea{flex:1 1 320px;min-width:0;border-radius:18px;resize:vertical;min-height:52px}
 .fb-note{color:var(--ink-3);font-size:14px}
+.fb-toggle{min-height:34px;padding:0 13px;font-size:13.5px;color:var(--ink-3)}
+.fb-toggle[aria-expanded="true"]{color:var(--ink)}
+.challenge .fb{border-top-color:rgba(242,240,234,.16)}
+.pick .fb{border-top:0;padding-top:4px}
 .kv{display:grid;gap:4px;align-content:start}
 .kv b{font-weight:500;font-size:14.5px;color:var(--ink-3)}
 @media (max-width:640px){.rowx>button{grid-template-columns:30px minmax(0,1fr)}.rowx>button .tagp{display:none}.rowx .inner{padding-left:0}}

@@ -242,6 +242,15 @@ function ChallengeCard({ s }: { s: State }) {
         ))}
       </div>
       <p>{steps.length && !left ? "Výzva je splněná. Zapiš si ji do Systémů, ať o ní víš." : "Zbývá " + plural(left, "krok", "kroky", "kroků") + "."}</p>
+      <FeedbackBox
+        id={"challenge-" + ch.id}
+        kind="challenge"
+        title={ch.title || "Výzva týdne"}
+        label="Sedí ti tahle výzva?"
+        up="Tohle chci dělat"
+        down="Tohle ne"
+        placeholder="Připomínka k výzvě. Třeba: moc velké na jeden týden, nebo: chci něco pro práci"
+      />
     </div>
   );
 }
